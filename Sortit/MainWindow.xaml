@@ -1,0 +1,25 @@
+﻿<Window x:Class="Sortit.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sortit" Height="350" Width="525">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open"></MenuItem>
+                <MenuItem Header="_Save"></MenuItem>
+                <MenuItem Header="_Exit"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Actions">
+                <MenuItem Header="_Sort"></MenuItem>
+                <MenuItem Header="_Calculate"></MenuItem>
+                <MenuItem Header="_Stop"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Documentation"></MenuItem>
+                <MenuItem Header="_About"></MenuItem>
+            </MenuItem>
+        </Menu>
+    </DockPanel>
+</Window>
+
+    

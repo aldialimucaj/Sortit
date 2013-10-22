@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,5 +25,40 @@ namespace Sortit
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// Clicking the start button starts the listing and sorting process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            String filePath = txtSourceFolder.Text;
+            if (!filePath.EndsWith("\\"))
+            {
+                filePath += "\\";
+            }
+            var files = IOUtils.GetAllFiles(filePath, "*.*", _ => _.Exists).ToList();
+            foreach(String file in files) 
+            {
+                tvFilesTree.Items.Add(file);
+            }
+        }
+
+        private void btnSourceFolder_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog dlg = new FolderBrowserDialog();
+
+            // Show open file dialog box
+            DialogResult result = dlg.ShowDialog();
+                        
+            txtSourceFolder.Text = dlg.SelectedPath; ;
+        }
+
+        private void btnDestinationFolder_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }

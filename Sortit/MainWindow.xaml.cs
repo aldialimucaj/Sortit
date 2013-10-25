@@ -46,18 +46,21 @@ namespace Sortit
         /// <param name="e"></param>
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text+ "\\";
+            String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
             IEnumerable<File2Sort> files = null;
 
+            // If alpha numerical files are to be ignored then a different delegate: TODO Might be more elegant
             if (chckIgnoreNonAlpha.IsChecked.Value)
             {
                 files = IOUtils.GetAllFiles(filePath, txtPattern.Text, _ => _.IsAlphaNumeric).ToList();
             }
             else
             {
-                files = IOUtils.GetAllFiles(filePath, txtPattern.Text, _ => !_.RawDestinationFile.Exists).ToList();
+                files = IOUtils.GetAllFiles(filePath, txtPattern.Text).ToList();
             }
 
+            // Adding entries in the treeView
+            tvFilesTree.Items.Clear();
             foreach (File2Sort file in files)
             {
                 tvFilesTree.Items.Add(file);
@@ -133,15 +136,9 @@ namespace Sortit
             Properties.Settings.Default.Save();
         }
 
-        private void chckCleanEmptyDir_Click(object sender, RoutedEventArgs e)
+        private void chckCleanEmptyDir_UnCheck(object sender, RoutedEventArgs e)
         {
             Settings.Default["chck_clean_dir"] = chckCleanEmptyDir.IsEnabled;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckIgnoreNonAlpha_Click(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_ignore_non_alpha"] = chckIgnoreNonAlpha.IsEnabled;
             Properties.Settings.Default.Save();
         }
 
@@ -149,6 +146,30 @@ namespace Sortit
         {
             Settings.Default["crawl_pattern"] = txtPattern.Text;
             Settings.Default.Save();
+        }
+
+        private void chckIgnoreNonAlpha_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chck_ignore_non_alpha"] = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chckIgnoreNonAlpha_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chck_ignore_non_alpha"] = false;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chckCleanEmptyDir_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chck_clean_dir"] = false;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chckCleanEmptyDir_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chck_clean_dir"] = true;
+            Properties.Settings.Default.Save();
         }
     }
 }

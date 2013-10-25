@@ -40,11 +40,12 @@ namespace Sortit
                 {
                     x.Error(e.Message);
                 }
-                foreach (string file in files)
-                {
-                    if (null != file && (checkFile == null || checkFile(new File2Sort(file))))
-                        yield return new File2Sort(file);
-                }
+            }
+
+            foreach (string file in files)
+            {
+                if (null != file && (checkFile == null || checkFile(new File2Sort(file))))
+                    yield return new File2Sort(file);
             }
         }
 

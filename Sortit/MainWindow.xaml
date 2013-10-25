@@ -36,10 +36,47 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Start</Button>
-                    <ComboBox Grid.Row="1" Name="SortingType"></ComboBox>
-                    <Button Grid.Row="0" Grid.Column="1">Calculate</Button>
-                    <TextBox Grid.Row="1" Grid.Column="1">${Pattern}</TextBox>
-                    <ComboBox Grid.Row="2" Name="Depth"></ComboBox>
+                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
+                        <ComboBoxItem Name="alpha">Alphabetically</ComboBoxItem>
+                        <ComboBoxItem Name="date">Date</ComboBoxItem>
+                    </ComboBox>
+                    <Button Grid.Row="0" Grid.Column="1" Name="btnCalculate">Calculate</Button>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtPattern" Text="{Binding Source={StaticResource Settings}, Path=Default.crawl_pattern}" TextChanged="txtPattern_TextChanged" ></TextBox>
+                    
+                </Grid>
+                <Grid DockPanel.Dock="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Row="0" 
+                              Grid.Column="0" 
+                              Name="chckCleanEmptyDir" 
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_clean_dir}" 
+                              Click="chckCleanEmptyDir_Click"
+                              Margin="5"
+                              >Clean up Empty Directories</CheckBox>
+                    <CheckBox Grid.Row="0" 
+                              Grid.Column="1" 
+                              Name="chckIgnoreNonAlpha" 
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_ignore_non_alpha}" 
+                              Click="chckIgnoreNonAlpha_Click"
+                              Margin="5"
+                              >Ignore non Alpha-Numeric Names</CheckBox>
+                    <TextBox Grid.Row="0" 
+                             Grid.Column="2" 
+                             Name="txtDepth" 
+                             Text="{Binding Source={StaticResource Settings}, Path=Default.value_depth}" 
+                             TextChanged="txtDepth_TextChanged"
+                             Padding="5"
+                             ></TextBox>
 
                 </Grid>
                 <Grid DockPanel.Dock="Top">
@@ -52,9 +89,9 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="0" Grid.Column="0" Margin="10,2,10,2" VerticalAlignment="Bottom" Name="btnSourceFolder" Click="btnSourceFolder_Click">Source</Button>
-                    <TextBox Grid.Row="0" Grid.Column="1" Name="txtSourceFolder"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="txtSourceFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.dir_source}"/>
                     <Button Grid.Row="1" Grid.Column="0" Margin="10,2,10,2" Name="btnDestinationFolder" Click="btnDestinationFolder_Click">Destination</Button>
-                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtDestinationFolder"></TextBox>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtDestinationFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.dir_destination}" TextChanged="txtDestinationFolder_TextChanged"/>
                 </Grid>
 
                 <TreeView Name="tvFilesTree" DockPanel.Dock="Bottom" />

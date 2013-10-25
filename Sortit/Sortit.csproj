@@ -69,6 +69,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="al\aldi\sortit\control\FileExistsException.cs" />
+    <Compile Include="al\aldi\sortit\control\ISort.cs" />
+    <Compile Include="al\aldi\sortit\control\SortFilesAlpha.cs" />
     <Compile Include="al\aldi\sortit\model\File2Sort.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

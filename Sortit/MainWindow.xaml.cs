@@ -58,17 +58,16 @@ namespace Sortit
             // Status bar update 
             UpdateStatusBar(files);
 
-            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
+            ISort algorithm = GetSelectedAlgorithm();
+            if (null != algorithm)
             {
-                case "alpha":
-                    SortFilesAlpha sfa = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text));
-                    sfa.Copy = chckCopy.IsChecked.Value;
-                    sfa.Sort(files);
-                    if (chckCleanEmptyDir.IsChecked.Value)
-                    {
-                        IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
-                    }
-                    break;
+                algorithm.PrepareForSorting(files);
+                algorithm.Sort(files);
+                if (chckCleanEmptyDir.IsChecked.Value)
+                {
+                    IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
+                    IOUtils.CleanEmptyDirs(txtSourceFolder.Text);
+                }
             }
 
         }
@@ -81,12 +80,10 @@ namespace Sortit
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList(); //todo adding checkConfig here prevents the sorting.
 
-            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
+            ISort algorithm = GetSelectedAlgorithm();
+            if (null != algorithm)
             {
-                case "alpha":
-                    SortFilesAlpha sfa = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text));
-                    sfa.PrepareForSorting(files);
-                    break;
+                algorithm.PrepareForSorting(files);
             }
 
             // Adding entries in the treeView

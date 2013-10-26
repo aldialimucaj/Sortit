@@ -35,9 +35,6 @@ namespace Sortit.al.aldi.sortit.model
 
         }
 
-
-
-
         public File2Sort(FileInfo file)
         {
             RawSourceFile = file;

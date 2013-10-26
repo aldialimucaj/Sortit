@@ -86,7 +86,7 @@ namespace Sortit
         /// <param name="path">Path to be crawled</param>
         public static void CleanEmptyDirs(String path)
         {
-            IEnumerable<DirectoryInfo> t_directories = GetAllDirectories(path, _ => !_.EnumerateFiles().Any());
+            IEnumerable<DirectoryInfo> t_directories = GetAllDirectories(path, _ => !_.EnumerateFiles().Any() && !_.EnumerateDirectories().Any());
             foreach (DirectoryInfo dir in t_directories)
             {
                 Console.WriteLine("[DEL_DIR] "+dir.FullName);

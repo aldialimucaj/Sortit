@@ -21,5 +21,12 @@ namespace Sortit.al.aldi.sortit.control
         /// <param name="file"></param>
         /// <returns></returns>
         String RenameFunc(File2Sort file);
+
+        /// <summary>
+        /// Just prepare the files by setting the right destination into the File2Sort object.
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        IList<File2Sort> PrepareForSorting(IList<File2Sort> files);
     }
 }

@@ -21,10 +21,13 @@
                 </MenuItem>
             </Menu>
             <StatusBar DockPanel.Dock="Bottom">
-                <TextBlock>Status</TextBlock>
+                <TextBlock Name="txtOperation">Operation: </TextBlock>
+                <TextBlock Name="txtOperationValue"></TextBlock>
+                <TextBlock Name="txtGeneralSize" Margin="10,0,0,0">Size:</TextBlock>
+                <TextBlock Name="txtGeneralSizeValue"></TextBlock>
             </StatusBar>
-            <DockPanel x:Name="mainPanel" DockPanel.Dock="Bottom" >
-                <Grid DockPanel.Dock="Top">
+            <DockPanel x:Name="mainPanel" DockPanel.Dock="Bottom">
+                <Grid DockPanel.Dock="Top" Button.Click="updateButtonClick">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -37,7 +40,7 @@
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Start</Button>
                     <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
-                        <ComboBoxItem Name="alpha">Alphabetically</ComboBoxItem>
+                        <ComboBoxItem Name="alpha">Alphabetically [A-Z]</ComboBoxItem>
                         <ComboBoxItem Name="date">Date</ComboBoxItem>
                     </ComboBox>
                     <Button Grid.Row="0" Grid.Column="1" Name="btnCalculate" Click="btnCalculate_Click">Calculate</Button>
@@ -90,7 +93,7 @@
                     <CheckBox Grid.Row="1" 
                               Grid.Column="1" 
                               Name="chckShowSorted" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_copy}"
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_show_sorted}"
                               Margin="5" 
                               Checked="chckShowSorted_Checked"
                               Unchecked="chckShowSorted_Unchecked"
@@ -119,4 +122,5 @@
     </Grid>
 </Window>
 
+    
     

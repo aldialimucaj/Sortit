@@ -9,6 +9,6 @@ namespace Sortit.al.aldi.sortit.control
 {
     interface ISort
     {
-        void sort(IList<File2Sort> fiels);
+        void Sort(IList<File2Sort> fiels);
     }
 }

@@ -47,24 +47,23 @@ namespace Sortit
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
-            IEnumerable<File2Sort> files = null;
+            IList<File2Sort> files = null;
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList();
 
             // Adding entries in the treeView
-            tvFilesTree.Items.Clear();
-            foreach (File2Sort file in files)
-            {
-                tvFilesTree.Items.Add(file);
-            }
+            AddItemsToTree(files);
 
-            switch (SortingType.Text)
+            // Status bar update 
+            UpdateStatusBar(files);
+
+            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
-                case "Alphabetically":
+                case "alpha":
                     SortFilesAlpha sfa = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text));
                     sfa.Copy = chckCopy.IsChecked.Value;
-                    sfa.sort(files.ToList());
+                    sfa.Sort(files);
                     if (chckCleanEmptyDir.IsChecked.Value)
                     {
                         IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
@@ -77,16 +76,47 @@ namespace Sortit
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
-            IEnumerable<File2Sort> files = null;
+            IList<File2Sort> files = null;
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList();
 
+            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
+            {
+                case "alpha":
+                    SortFilesAlpha sfa = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text));
+                    sfa.PrepareForSorting(files);
+                    break;
+            }
+
             // Adding entries in the treeView
+            AddItemsToTree(files);
+
+            // Status bar update 
+            UpdateStatusBar(files);
+        }
+
+        private void UpdateStatusBar(IList<File2Sort> files)
+        {
+            long generalSize = (from f in files select f.RawSourceFile.Length).Sum() / (1024 * 1024);
+            txtGeneralSizeValue.Text = generalSize.ToString() + " MB";
+
+        }
+
+
+        private void AddItemsToTree(IList<File2Sort> files)
+        {
             tvFilesTree.Items.Clear();
             foreach (File2Sort file in files)
             {
-                tvFilesTree.Items.Add(file);
+                TreeViewItem itemRoot = new TreeViewItem();
+                itemRoot.Header = file.FileName;
+                itemRoot.Items.Add("Source :-> " + file.FilePath);
+                itemRoot.Items.Add("Destination :-> " + file.FullDestination);
+                itemRoot.Items.Add("Size :-> " + (file.RawSourceFile.Length / (1024 * 1024)) + " MB");
+
+
+                tvFilesTree.Items.Add(itemRoot);
             }
         }
 
@@ -205,26 +235,31 @@ namespace Sortit
 
         private void chckCopy_Checked(object sender, RoutedEventArgs e)
         {
-            Settings.Default["chckCopy"] = true;
+            Settings.Default["chck_copy"] = true;
             Properties.Settings.Default.Save();
         }
 
         private void chckCopy_Unchecked(object sender, RoutedEventArgs e)
         {
-            Settings.Default["chckCopy"] = false;
+            Settings.Default["chck_copy"] = false;
             Properties.Settings.Default.Save();
         }
 
         private void chckShowSorted_Unchecked(object sender, RoutedEventArgs e)
         {
-            Settings.Default["chckShowSorted"] = true;
+            Settings.Default["chck_show_sorted"] = false;
             Properties.Settings.Default.Save();
         }
 
         private void chckShowSorted_Checked(object sender, RoutedEventArgs e)
         {
-            Settings.Default["chckShowSorted"] = false;
+            Settings.Default["chck_show_sorted"] = true;
             Properties.Settings.Default.Save();
+        }
+
+        private void updateButtonClick(object sender, RoutedEventArgs e)
+        {
+            txtOperationValue.Text = ((System.Windows.Controls.Button)e.Source).Content.ToString();
         }
 
 

@@ -110,24 +110,24 @@ namespace Sortit.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chckCopy {
+        public bool chck_copy {
             get {
-                return ((bool)(this["chckCopy"]));
+                return ((bool)(this["chck_copy"]));
             }
             set {
-                this["chckCopy"] = value;
+                this["chck_copy"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chckShowSorted {
+        public bool chck_show_sorted {
             get {
-                return ((bool)(this["chckShowSorted"]));
+                return ((bool)(this["chck_show_sorted"]));
             }
             set {
-                this["chckShowSorted"] = value;
+                this["chck_show_sorted"] = value;
             }
         }
     }

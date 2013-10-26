@@ -38,7 +38,7 @@ namespace Sortit.al.aldi.sortit.control
             Copy = copy;
         }
 
-        public void sort(IList<File2Sort> files)
+        public void Sort(IList<File2Sort> files)
         {
             SortFunction rename = RenameFunc;
 
@@ -54,11 +54,34 @@ namespace Sortit.al.aldi.sortit.control
                 {
                     IOUtils.SafeRename(file);
                 }
-                
+
             }
 
             Console.WriteLine(files);
         }
+
+        public IList<File2Sort> PrepareForSorting(IList<File2Sort> files)
+        {
+            SortFunction rename = RenameFunc;
+
+            foreach (File2Sort file in files)
+            {
+                file.SetDestinationFullPath(_ => rename(_));
+                Console.WriteLine(file.FullDestination);
+            }
+
+            return files;
+        }
+
+        public void PrepareForSorting(File2Sort file)
+        {
+            SortFunction rename = RenameFunc;
+
+            file.SetDestinationFullPath(_ => rename(_));
+            Console.WriteLine(file.FullDestination);
+        }
+
+
 
         /// <summary>
         /// Sorting Function for alphabetically sorting algorithm.

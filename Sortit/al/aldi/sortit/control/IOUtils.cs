@@ -162,11 +162,5 @@ namespace Sortit
                 Directory.CreateDirectory(file2check.Directory.FullName);
             }
         }
-
-
-        static CheckFile checkfile = delegate(File2Sort fileInfo)
-        {
-            return true;
-        };
     }
 }

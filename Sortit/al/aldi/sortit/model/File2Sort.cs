@@ -24,7 +24,7 @@ namespace Sortit.al.aldi.sortit.model
         }    // the destination root file
         public bool IsAlphaNumeric
         {
-            get { return SortFilesAlpha.alphabet.Any(s => FileName.StartsWith(s)); }
+            get { return SortFilesAlpha.alphabet.Any(s => FileName.ToUpper().StartsWith(s)); }
         }
         public bool IsAlreadySorted
         {

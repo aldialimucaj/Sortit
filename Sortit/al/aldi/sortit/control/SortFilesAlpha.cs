@@ -93,7 +93,7 @@ namespace Sortit.al.aldi.sortit.control
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        private String RenameFunc(File2Sort file)
+        public String RenameFunc(File2Sort file)
         {
 
             String returnPath = Destination;

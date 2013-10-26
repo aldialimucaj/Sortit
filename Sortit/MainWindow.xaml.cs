@@ -79,7 +79,7 @@ namespace Sortit
             IList<File2Sort> files = null;
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
-            files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList();
+            files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList(); //todo adding checkConfig here prevents the sorting.
 
             switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
@@ -95,6 +95,8 @@ namespace Sortit
             // Status bar update 
             UpdateStatusBar(files);
         }
+
+
 
         private void UpdateStatusBar(IList<File2Sort> files)
         {
@@ -134,11 +136,27 @@ namespace Sortit
             }
             if (!chckShowSorted.IsChecked.Value)
             {
+
+                file.SetDestinationFullPath(GetSelectedAlgorithm().RenameFunc);
                 fileChecked &= file.IsAlreadySorted;
             }
 
             return fileChecked;
 
+        }
+
+        private ISort GetSelectedAlgorithm()
+        {
+            ISort algorithm = null;
+
+            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
+            {
+                case "alpha":
+                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text), chckCopy.IsChecked.Value);
+                    break;
+            }
+
+            return algorithm;
         }
 
         private void btnSourceFolder_Click(object sender, RoutedEventArgs e)

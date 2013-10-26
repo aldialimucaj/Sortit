@@ -49,15 +49,8 @@ namespace Sortit
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
             IEnumerable<File2Sort> files = null;
 
-            // If alpha numerical files are to be ignored then a different delegate: TODO Might be more elegant
-            if (chckIgnoreNonAlpha.IsChecked.Value)
-            {
-                files = IOUtils.GetAllFiles(filePath, txtPattern.Text, _ => _.IsAlphaNumeric).ToList();
-            }
-            else
-            {
-                files = IOUtils.GetAllFiles(filePath, txtPattern.Text).ToList();
-            }
+            Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
+            files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList();
 
             // Adding entries in the treeView
             tvFilesTree.Items.Clear();
@@ -70,6 +63,7 @@ namespace Sortit
             {
                 case "Alphabetically":
                     SortFilesAlpha sfa = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text));
+                    sfa.Copy = chckCopy.IsChecked.Value;
                     sfa.sort(files.ToList());
                     if (chckCleanEmptyDir.IsChecked.Value)
                     {
@@ -77,6 +71,43 @@ namespace Sortit
                     }
                     break;
             }
+
+        }
+
+        private void btnCalculate_Click(object sender, RoutedEventArgs e)
+        {
+            String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
+            IEnumerable<File2Sort> files = null;
+
+            Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
+            files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList();
+
+            // Adding entries in the treeView
+            tvFilesTree.Items.Clear();
+            foreach (File2Sort file in files)
+            {
+                tvFilesTree.Items.Add(file);
+            }
+        }
+
+        private bool GetCheckFileConfig(File2Sort file)
+        {
+            bool fileChecked = true;
+
+            //compulsory checks
+
+
+            // variable checks
+            if (chckIgnoreNonAlpha.IsChecked.Value)
+            {
+                fileChecked &= file.IsAlphaNumeric;
+            }
+            if (!chckShowSorted.IsChecked.Value)
+            {
+                fileChecked &= file.IsAlreadySorted;
+            }
+
+            return fileChecked;
 
         }
 
@@ -171,5 +202,31 @@ namespace Sortit
             Settings.Default["chck_clean_dir"] = true;
             Properties.Settings.Default.Save();
         }
+
+        private void chckCopy_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chckCopy"] = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chckCopy_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chckCopy"] = false;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chckShowSorted_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chckShowSorted"] = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void chckShowSorted_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default["chckShowSorted"] = false;
+            Properties.Settings.Default.Save();
+        }
+
+
     }
 }

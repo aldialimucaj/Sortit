@@ -90,7 +90,7 @@ namespace Sortit
             foreach (DirectoryInfo dir in t_directories)
             {
                 Console.WriteLine("[DEL_DIR] "+dir.FullName);
-//                dir.Delete();
+                dir.Delete();
             }
         }
 
@@ -121,6 +121,38 @@ namespace Sortit
             }
         }
 
+        /// <summary>
+        /// Copy files to the destination within the file attribute
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static bool SafeCopy(File2Sort file)
+        {
+            if (!file.DestinationFileExists())
+            {
+                try
+                {
+                    SafeCreateParents(file.FullDestination);
+                    File.Copy(file.FullPath, file.FullDestination);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    x.Error(e.Message);
+                    return false;
+                }
+            }
+            else
+            {
+                x.Error("Destination file already exists: " + file.FullDestination);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Create parent directories recursively
+        /// </summary>
+        /// <param name="file">Path to create</param>
         public static void SafeCreateParents(String file)
         {
             FileInfo file2check = new FileInfo(file);

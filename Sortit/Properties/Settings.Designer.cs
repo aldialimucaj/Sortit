@@ -106,5 +106,29 @@ namespace Sortit.Properties {
                 this["chck_ignore_non_alpha"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chckCopy {
+            get {
+                return ((bool)(this["chckCopy"]));
+            }
+            set {
+                this["chckCopy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chckShowSorted {
+            get {
+                return ((bool)(this["chckShowSorted"]));
+            }
+            set {
+                this["chckShowSorted"] = value;
+            }
+        }
     }
 }

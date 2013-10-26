@@ -11,7 +11,7 @@ namespace Sortit.al.aldi.sortit.control
     {
         public static readonly string[] alphabet = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
         public const string rest = "_REST";
-        public bool IgnoreNonAlphaNumeric { get; set; }
+        public bool Copy { get; set; }    // just copy the files, dont move them
 
         public delegate String SortFunction(File2Sort file);
 
@@ -31,11 +31,11 @@ namespace Sortit.al.aldi.sortit.control
             _depth = depth;
         }
 
-        public SortFilesAlpha(String dest, int depth, bool ignoreNonAlpha)
+        public SortFilesAlpha(String dest, int depth, bool copy)
         {
             Destination = dest;
             _depth = depth;
-            IgnoreNonAlphaNumeric = ignoreNonAlpha;
+            Copy = copy;
         }
 
         public void sort(IList<File2Sort> files)
@@ -43,11 +43,19 @@ namespace Sortit.al.aldi.sortit.control
             SortFunction rename = RenameFunc;
 
             foreach (File2Sort file in files)
+            {
+                file.SetDestinationFullPath(_ => rename(_));
+                Console.WriteLine(file.FullDestination);
+                if (Copy)
                 {
-                    file.SetDestinationFullPath(_ => rename(_));
-                    Console.WriteLine(file.FullDestination);
-//                    IOUtils.SafeRename(file);
+                    IOUtils.SafeCopy(file);
                 }
+                else
+                {
+                    IOUtils.SafeRename(file);
+                }
+                
+            }
 
             Console.WriteLine(files);
         }
@@ -62,10 +70,11 @@ namespace Sortit.al.aldi.sortit.control
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        private String RenameFunc(File2Sort file) {
+        private String RenameFunc(File2Sort file)
+        {
 
             String returnPath = Destination;
-            
+
             int recursion = 0;
 
             while (recursion <= _depth)
@@ -74,7 +83,8 @@ namespace Sortit.al.aldi.sortit.control
                 {
                     returnPath = returnPath.EndsWith("\\") ? returnPath : returnPath + "\\";
 
-                    if(alphabet.Contains(file.FileName.ToUpper().Substring(recursion,1))){
+                    if (alphabet.Contains(file.FileName.ToUpper().Substring(recursion, 1)))
+                    {
                         returnPath += file.FileName.Substring(0, recursion + 1).ToUpper();
                     }
                     else

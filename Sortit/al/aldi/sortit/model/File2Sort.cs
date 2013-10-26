@@ -26,6 +26,15 @@ namespace Sortit.al.aldi.sortit.model
         {
             get { return SortFilesAlpha.alphabet.Any(s => FileName.StartsWith(s)); }
         }
+        public bool IsAlreadySorted
+        {
+            get
+            {
+                return null != FullPath && null != FullDestination && !FullPath.Equals(FullDestination);
+            }
+
+        }
+
 
 
 

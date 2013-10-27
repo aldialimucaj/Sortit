@@ -86,10 +86,19 @@ namespace Sortit
         /// <param name="path">Path to be crawled</param>
         public static void CleanEmptyDirs(String path)
         {
-            IEnumerable<DirectoryInfo> t_directories = GetAllDirectories(path, _ => !_.EnumerateFiles().Any() && !_.EnumerateDirectories().Any());
+            IEnumerable<DirectoryInfo> t_directories = 
+                GetAllDirectories(path, 
+                _ => // in order to delete directories there have to be no files/directories or just the Thumbs.db file
+                    (!_.EnumerateFiles().Any() || (_.EnumerateFiles().Count() == 1 && _.EnumerateFiles().First().Name.Equals("Thumbs.db"))) &&
+                    !_.EnumerateDirectories().Any());
             foreach (DirectoryInfo dir in t_directories)
             {
                 Console.WriteLine("[DEL_DIR] "+dir.FullName);
+                IEnumerable<FileInfo> enumFiles = dir.EnumerateFiles();
+                if (enumFiles.Any() && enumFiles.First().Name.Equals("Thumbs.db"))
+                {
+                    enumFiles.First().Delete();
+                }
                 dir.Delete();
             }
         }

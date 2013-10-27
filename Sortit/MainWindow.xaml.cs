@@ -3,6 +3,8 @@ using Sortit.al.aldi.sortit.model;
 using Sortit.Properties;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -33,6 +35,14 @@ namespace Sortit
         public MainWindow()
         {
             InitializeComponent();
+
+            // Setting the window Icon
+            var iconStream = new MemoryStream();
+            Icon icon = Properties.Resources.format_indent_more;
+            icon.Save(iconStream);
+            iconStream.Seek(0, SeekOrigin.Begin);
+            Icon = BitmapFrame.Create(iconStream);
+
             // Console for debug purposes
 #if DEBUG
             AllocConsole();
@@ -162,11 +172,13 @@ namespace Sortit
 
             // Show open file dialog box
             DialogResult result = dlg.ShowDialog();
+            if (!dlg.SelectedPath.Equals(""))
+            {
+                txtSourceFolder.Text = dlg.SelectedPath;
 
-            txtSourceFolder.Text = dlg.SelectedPath;
-
-            Settings.Default["dir_source"] = txtSourceFolder.Text;
-            Settings.Default.Save();
+                Settings.Default["dir_source"] = txtSourceFolder.Text;
+                Settings.Default.Save();
+            }
         }
 
         private void btnDestinationFolder_Click(object sender, RoutedEventArgs e)
@@ -175,11 +187,13 @@ namespace Sortit
 
             // Show open file dialog box
             DialogResult result = dlg.ShowDialog();
+            if (!dlg.SelectedPath.Equals(""))
+            {
+                txtDestinationFolder.Text = dlg.SelectedPath;
 
-            txtDestinationFolder.Text = dlg.SelectedPath;
-
-            Settings.Default["dir_destination"] = txtDestinationFolder.Text;
-            Settings.Default.Save();
+                Settings.Default["dir_destination"] = txtDestinationFolder.Text;
+                Settings.Default.Save();
+            }
         }
 
 
@@ -274,7 +288,10 @@ namespace Sortit
 
         private void updateButtonClick(object sender, RoutedEventArgs e)
         {
-            txtOperationValue.Text = ((System.Windows.Controls.Button)e.Source).Content.ToString();
+            if (e.Source.GetType() == typeof(System.Windows.Controls.Button))
+            {
+                txtOperationValue.Text = ((System.Windows.Controls.Button)e.Source).Content.ToString();
+            }
         }
 
 

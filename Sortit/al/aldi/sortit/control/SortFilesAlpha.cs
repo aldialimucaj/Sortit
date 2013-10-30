@@ -38,9 +38,10 @@ namespace Sortit.al.aldi.sortit.control
             Copy = copy;
         }
 
-        public void Sort(IList<File2Sort> files)
+        public async Task<bool> Sort(IList<File2Sort> files)
         {
             SortFunction rename = RenameFunc;
+            bool everythingSuccessful = true;
 
             foreach (File2Sort file in files)
             {
@@ -48,16 +49,22 @@ namespace Sortit.al.aldi.sortit.control
                 Console.WriteLine(file.FullDestination);
                 if (Copy)
                 {
-                    IOUtils.SafeCopy(file);
+                    everythingSuccessful &= await IOUtils.SafeCopyAsync(file);
                 }
                 else
                 {
-                    IOUtils.SafeRename(file);
+                    everythingSuccessful &= IOUtils.SafeRename(file);
                 }
 
             }
 
             Console.WriteLine(files);
+            return everythingSuccessful;
+        }
+
+        public async Task<bool> SortAsync(IList<File2Sort> files)
+        {
+            return await Sort(files);
         }
 
         public IList<File2Sort> PrepareForSorting(IList<File2Sort> files)

@@ -13,7 +13,7 @@ namespace Sortit.al.aldi.sortit.control
         /// Sort the files in the list
         /// </summary>
         /// <param name="fiels"></param>
-        void Sort(IList<File2Sort> fiels);
+        Task<bool> SortAsync(IList<File2Sort> fiels);
 
         /// <summary>
         /// Rename the file after the predefined algorithm

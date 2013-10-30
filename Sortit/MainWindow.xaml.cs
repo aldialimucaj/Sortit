@@ -54,13 +54,15 @@ namespace Sortit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
             IList<File2Sort> files = null;
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
-            files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList();
+            files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig);
+
+            
 
             // Adding entries in the treeView
             AddItemsToTree(files);
@@ -72,7 +74,7 @@ namespace Sortit
             if (null != algorithm)
             {
                 algorithm.PrepareForSorting(files);
-                algorithm.Sort(files);
+                await algorithm.SortAsync(files);
                 if (chckCleanEmptyDir.IsChecked.Value)
                 {
                     IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
@@ -82,13 +84,27 @@ namespace Sortit
 
         }
 
-        private void btnCalculate_Click(object sender, RoutedEventArgs e)
+        private void RegisterObserver(IList<File2Sort> files)
+        {
+            foreach (File2Sort file in files)
+            {
+                file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(this.UpdateFileChanged);
+            }
+        }
+
+        public void UpdateFileChanged(File2Sort file)
+        {
+            Console.WriteLine("CHANGED: "+ file);
+        }
+
+        private async void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
             IList<File2Sort> files = null;
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
-            files = IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig).ToList(); //todo adding checkConfig here prevents the sorting.
+            files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
+            RegisterObserver(files);
 
             ISort algorithm = GetSelectedAlgorithm();
             if (null != algorithm)

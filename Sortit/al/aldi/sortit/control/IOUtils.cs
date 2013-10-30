@@ -23,17 +23,19 @@ namespace Sortit
         /// <param name="mask">Mask to filter the files with. Can be separated by a pipe like *.txt|*.pdf</param>
         /// <param name="checkFile">Delegate to check for</param>
         /// <returns></returns>
-        public static IEnumerable<File2Sort> GetAllFiles(String path, String mask, Func<File2Sort, bool> checkFile = null)
+        public async static Task<IList<File2Sort>> GetAllFiles(String path, String mask, Func<File2Sort, bool> checkFile = null)
         {
             path = Path.GetDirectoryName(path);
 
+            List<File2Sort> listFiles = new List<File2Sort>();
             List<string> files = new List<string>();
             string[] fileMasks = mask.Split('|');
             foreach (string fMaks in fileMasks)
             {
                 try
                 {
-                    string[] t_files = Directory.GetFiles(path, fMaks, SearchOption.AllDirectories);
+                    string[] t_files = await Task.Run<string[]>(() => Directory.GetFiles(path, fMaks, SearchOption.AllDirectories));
+                    
                     files.AddRange(t_files);
                 }
                 catch (Exception e)
@@ -42,11 +44,14 @@ namespace Sortit
                 }
             }
 
+            
             foreach (string file in files)
             {
-                if (null != file && (checkFile == null || checkFile(new File2Sort(file))))
-                    yield return new File2Sort(file);
+                File2Sort f2s = new File2Sort(file);
+                if (null != file && (checkFile == null || checkFile(f2s)))
+                    listFiles.Add(f2s);
             }
+            return listFiles;
         }
 
         /// <summary>
@@ -55,10 +60,10 @@ namespace Sortit
         /// <param name="path"></param>
         /// <param name="checkFile"></param>
         /// <returns></returns>
-        public static IEnumerable<File2Sort> GetAllFiles(String path, Func<File2Sort, bool> checkFile = null)
+        public async static Task<IList<File2Sort>> GetAllFiles(String path, Func<File2Sort, bool> checkFile = null)
         {
             String mask = "*.*";
-            return IOUtils.GetAllFiles(path, mask, checkFile);
+            return await IOUtils.GetAllFiles(path, mask, checkFile);
         }
 
         /// <summary>
@@ -131,6 +136,33 @@ namespace Sortit
         }
 
         /// <summary>
+        /// Async Renames file after checking that destination doesnt exist.
+        /// </summary>
+        /// <param name="file"></param>
+        public async static Task<bool> SafeRenameAsync(File2Sort file)
+        {
+            if (!file.DestinationFileExists())
+            {
+                try
+                {
+                    SafeCreateParents(file.FullDestination);
+                    await Task.Run(() => File.Move(file.FullPath, file.FullDestination) );
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    x.Error(e.Message);
+                    return false;
+                }
+            }
+            else
+            {
+                x.Error("Destination file already exists: " + file.FullDestination);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Copy files to the destination within the file attribute
         /// </summary>
         /// <param name="file"></param>
@@ -157,6 +189,37 @@ namespace Sortit
                 return false;
             }
         }
+
+        /// <summary>
+        /// Asynchronously Copy files to the destination within the file attribute
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public async static Task<bool> SafeCopyAsync(File2Sort file)
+        {
+            if (!file.DestinationFileExists())
+            {
+                try
+                {
+                    SafeCreateParents(file.FullDestination);
+                    await Task.Run( () => File.Copy(file.FullPath, file.FullDestination) );
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    x.Error(e.Message);
+                    return false;
+                }
+            }
+            else
+            {
+                x.Error("Destination file already exists: " + file.FullDestination);
+                return false;
+            }
+        }
+
+
+
 
         /// <summary>
         /// Create parent directories recursively

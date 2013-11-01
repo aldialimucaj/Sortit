@@ -48,6 +48,15 @@ namespace Sortit.al.aldi.sortit.model
             
         }
 
+        public File2Sort(File2Sort file)
+            : this(file.FullPath)
+        {
+            if (null != file.FullDestination)
+            {
+                this.FullDestination = file.FullDestination;
+            }
+        }
+
         public void SetDestinationFullPath(Func<File2Sort, String> sortFunc)
         {
             FullDestination = sortFunc(this);

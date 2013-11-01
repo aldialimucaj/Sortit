@@ -23,7 +23,9 @@
             <StatusBar DockPanel.Dock="Bottom">
                 <TextBlock Name="txtOperation">Operation: </TextBlock>
                 <TextBlock Name="txtOperationValue"></TextBlock>
-                <TextBlock Name="txtGeneralSize" Margin="10,0,0,0">Size:</TextBlock>
+                <TextBlock Name="txtItemsCount" Margin="10,0,0,0">| Items: </TextBlock>
+                <TextBlock Name="txtItemsCountValue"></TextBlock>
+                <TextBlock Name="txtGeneralSize" Margin="10,0,0,0">| Size: </TextBlock>
                 <TextBlock Name="txtGeneralSizeValue"></TextBlock>
             </StatusBar>
             <DockPanel x:Name="mainPanel" DockPanel.Dock="Bottom">

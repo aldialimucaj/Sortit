@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sortit.al.aldi.sortit.control
@@ -71,11 +72,17 @@ namespace Sortit.al.aldi.sortit.control
         {
             SortFunction rename = RenameFunc;
 
-            foreach (File2Sort file in files)
+            Thread th1 = new Thread(delegate()
             {
-                file.SetDestinationFullPath(_ => rename(_));
-                Console.WriteLine(file.FullDestination);
-            }
+
+                foreach (File2Sort file in files)
+                {
+                    file.SetDestinationFullPath(_ => rename(_));
+                    Console.WriteLine(file.FullDestination);
+                }
+            });
+
+            th1.Start();
 
             return files;
         }

@@ -3,11 +3,13 @@ using Sortit.al.aldi.sortit.model;
 using Sortit.Properties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,9 +34,18 @@ namespace Sortit
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
 
+        //        long generalSize = 0;
+        //        long itemsCount = 0;
+
+        private readonly BackgroundWorker worker = new BackgroundWorker();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Registering background worker for intense computation
+            worker.DoWork += worker_DoWork;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
 
             // Setting the window Icon
             var iconStream = new MemoryStream();
@@ -49,6 +60,42 @@ namespace Sortit
 #endif
         }
 
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                // The user canceled the operation.
+            }
+            else if (e.Error != null)
+            {
+                // There was an error during the operation.
+                string msg = String.Format("An error occurred: {0}", e.Error.Message);
+            }
+            else
+            {
+                // The operation completed normally.
+                string msg = String.Format("Result = {0}", e.Result);
+            }
+        }
+
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker bw = sender as BackgroundWorker;
+
+            // get the right object type here
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>> arg = e.Argument as Tuple<System.Windows.Controls.TreeView, IList<File2Sort>>;
+
+            AddItemsToTree(bw, arg.Item1, arg.Item2);
+
+            // if uses decides to stop operation
+            if (bw.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+
+        }
+
+
         /// <summary>
         /// Clicking the start button starts the listing and sorting process.
         /// </summary>
@@ -62,13 +109,12 @@ namespace Sortit
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig);
 
-            
-
             // Adding entries in the treeView
-            AddItemsToTree(files);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>>(tvFilesTree, files);
+            worker.RunWorkerAsync(arg);
 
             // Status bar update 
-            UpdateStatusBar(files);
+            UpdateStatusBar(arg.Item2);
 
             ISort algorithm = GetSelectedAlgorithm();
             if (null != algorithm)
@@ -77,6 +123,7 @@ namespace Sortit
                 await algorithm.SortAsync(files);
                 if (chckCleanEmptyDir.IsChecked.Value)
                 {
+                    // cleaning both source and destination folders for empty directories
                     IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
                     IOUtils.CleanEmptyDirs(txtSourceFolder.Text);
                 }
@@ -84,18 +131,6 @@ namespace Sortit
 
         }
 
-        private void RegisterObserver(IList<File2Sort> files)
-        {
-            foreach (File2Sort file in files)
-            {
-                file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(this.UpdateFileChanged);
-            }
-        }
-
-        public void UpdateFileChanged(File2Sort file)
-        {
-            Console.WriteLine("CHANGED: "+ file);
-        }
 
         private async void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
@@ -104,7 +139,7 @@ namespace Sortit
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
-            RegisterObserver(files);
+            //RegisterObserver(files);
 
             ISort algorithm = GetSelectedAlgorithm();
             if (null != algorithm)
@@ -113,26 +148,50 @@ namespace Sortit
             }
 
             // Adding entries in the treeView
-            AddItemsToTree(files);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>>(tvFilesTree, files);
+            worker.RunWorkerAsync(arg);
 
             // Status bar update 
-            UpdateStatusBar(files);
+            UpdateStatusBar(arg.Item2);
         }
 
 
 
-        private void UpdateStatusBar(IList<File2Sort> files)
+
+
+        /// <summary>
+        /// Adds items to the list view. Should be run in background and called by a background worker.
+        /// </summary>
+        /// <param name="bw"></param>
+        /// <param name="files"></param>
+        private void AddItemsToTree(BackgroundWorker bw, System.Windows.Controls.TreeView tree, IList<File2Sort> files)
         {
-            long generalSize = (from f in files select f.RawSourceFile.Length).Sum() / (1024 * 1024);
-            txtGeneralSizeValue.Text = generalSize.ToString() + " MB";
+            //tree.Items.Clear();
 
-        }
+            tree.Dispatcher.Invoke(new Action(delegate()
+                {
+                    tree.Items.Clear();
+                }
+            ));
 
-
-        private void AddItemsToTree(IList<File2Sort> files)
-        {
-            tvFilesTree.Items.Clear();
             foreach (File2Sort file in files)
+            {
+                if (!bw.CancellationPending)
+                {
+                    AddItemToTree(tree, file);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private void AddItemToTree(System.Windows.Controls.TreeView tree, File2Sort file)
+        {
+           
+            //var retInt = tree.Items.Add(itemRoot);
+            tree.Dispatcher.Invoke(new Action(delegate()
             {
                 TreeViewItem itemRoot = new TreeViewItem();
                 itemRoot.Header = file.FileName;
@@ -140,9 +199,9 @@ namespace Sortit
                 itemRoot.Items.Add("Destination :-> " + file.FullDestination);
                 itemRoot.Items.Add("Size :-> " + (file.RawSourceFile.Length / (1024 * 1024)) + " MB");
 
-
-                tvFilesTree.Items.Add(itemRoot);
+                tree.Items.Add(itemRoot);
             }
+            ));
         }
 
         private bool GetCheckFileConfig(File2Sort file)
@@ -308,6 +367,29 @@ namespace Sortit
             {
                 txtOperationValue.Text = ((System.Windows.Controls.Button)e.Source).Content.ToString();
             }
+        }
+
+
+        private void RegisterObserver(IList<File2Sort> files)
+        {
+            foreach (File2Sort file in files)
+            {
+                file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(this.UpdateFileChanged);
+            }
+        }
+
+        public void UpdateFileChanged(File2Sort file)
+        {
+            //Console.WriteLine("CHANGED: " + file);
+        }
+
+
+        private void UpdateStatusBar(IList<File2Sort> files)
+        {
+            long generalSize = (from f in files select f.RawSourceFile.Length).Sum() / (1024 * 1024);
+            txtGeneralSizeValue.Text = generalSize.ToString() + " MB";
+            txtItemsCount.Text = files.Count.ToString();
+
         }
 
 

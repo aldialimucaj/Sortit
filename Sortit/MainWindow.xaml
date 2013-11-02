@@ -1,14 +1,16 @@
 ﻿<Window x:Class="Sortit.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sortit" Height="350" Width="525" >
+        Title="Sortit" Height="350" Width="525" 
+        xmlns:views="clr-namespace:Sortit.al.aldi.sortit.views"
+        >
     <Grid>
         <DockPanel LastChildFill="True">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_Open"></MenuItem>
                     <MenuItem Header="_Save"></MenuItem>
-                    <MenuItem Header="_Exit"></MenuItem>
+                    <MenuItem Header="_Exit" Name="mnItemExit"></MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Actions">
                     <MenuItem Header="_Sort"></MenuItem>
@@ -46,7 +48,13 @@
                         <ComboBoxItem Name="date">Date</ComboBoxItem>
                     </ComboBox>
                     <Button Grid.Row="0" Grid.Column="1" Name="btnCalculate" Click="btnCalculate_Click">Calculate</Button>
-                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtPattern" Text="{Binding Source={StaticResource Settings}, Path=Default.crawl_pattern}" TextChanged="txtPattern_TextChanged" ></TextBox>
+                    <TextBox Grid.Row="1" 
+                             Grid.Column="1" 
+                             Name="txtPattern" 
+                             Text="{Binding Source={StaticResource Settings}, Path=Default.crawl_pattern}" 
+                             TextChanged="txtPattern_TextChanged" 
+                             ToolTip="File Pattern to be looking for"
+                             />
                     
                 </Grid>
                 <Grid DockPanel.Dock="Top">
@@ -83,6 +91,7 @@
                              Text="{Binding Source={StaticResource Settings}, Path=Default.value_depth}" 
                              TextChanged="txtDepth_TextChanged"
                              Padding="5"
+                             ToolTip="Depth according to selected sorting algorithm"
                              ></TextBox>
                     <CheckBox Grid.Row="1" 
                               Grid.Column="0" 
@@ -118,6 +127,7 @@
                 </Grid>
 
                 <TreeView Name="tvFilesTree" DockPanel.Dock="Bottom" />
+                
             </DockPanel>
 
         </DockPanel>

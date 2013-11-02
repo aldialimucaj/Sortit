@@ -8,13 +8,10 @@ using System.Threading.Tasks;
 
 namespace Sortit.al.aldi.sortit.control
 {
-    class SortFilesAlpha : ISort
+    class SortFilesAlpha : SortImpl
     {
         public static readonly string[] alphabet = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
         public const string rest = "_REST";
-        public bool Copy { get; set; }    // just copy the files, dont move them
-
-        public delegate String SortFunction(File2Sort file);
 
         private int _depth = 1;
 
@@ -26,76 +23,18 @@ namespace Sortit.al.aldi.sortit.control
             set { _destination = value.EndsWith("\\") ? value : value + "\\"; }
         }
 
-        public SortFilesAlpha(String dest, int depth)
+        public SortFilesAlpha(String dest, int depth) : base(false)
         {
             Destination = dest;
             _depth = depth;
         }
 
         public SortFilesAlpha(String dest, int depth, bool copy)
+            : base(copy)
         {
             Destination = dest;
             _depth = depth;
-            Copy = copy;
         }
-
-        public async Task<bool> Sort(IList<File2Sort> files)
-        {
-            SortFunction rename = RenameFunc;
-            bool everythingSuccessful = true;
-
-            foreach (File2Sort file in files)
-            {
-                file.SetDestinationFullPath(_ => rename(_));
-                Console.WriteLine(file.FullDestination);
-                if (Copy)
-                {
-                    everythingSuccessful &= await IOUtils.SafeCopyAsync(file);
-                }
-                else
-                {
-                    everythingSuccessful &= IOUtils.SafeRename(file);
-                }
-
-            }
-
-            Console.WriteLine(files);
-            return everythingSuccessful;
-        }
-
-        public async Task<bool> SortAsync(IList<File2Sort> files)
-        {
-            return await Sort(files);
-        }
-
-        public IList<File2Sort> PrepareForSorting(IList<File2Sort> files)
-        {
-            SortFunction rename = RenameFunc;
-
-            Thread th1 = new Thread(delegate()
-            {
-
-                foreach (File2Sort file in files)
-                {
-                    file.SetDestinationFullPath(_ => rename(_));
-                    Console.WriteLine(file.FullDestination);
-                }
-            });
-
-            th1.Start();
-
-            return files;
-        }
-
-        public void PrepareForSorting(File2Sort file)
-        {
-            SortFunction rename = RenameFunc;
-
-            file.SetDestinationFullPath(_ => rename(_));
-            Console.WriteLine(file.FullDestination);
-        }
-
-
 
         /// <summary>
         /// Sorting Function for alphabetically sorting algorithm.
@@ -107,7 +46,7 @@ namespace Sortit.al.aldi.sortit.control
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public String RenameFunc(File2Sort file)
+        public override String RenameFunc(File2Sort file)
         {
 
             String returnPath = Destination;

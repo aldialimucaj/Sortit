@@ -28,5 +28,11 @@ namespace Sortit.al.aldi.sortit.control
         /// <param name="files"></param>
         /// <returns></returns>
         IList<File2Sort> PrepareForSorting(IList<File2Sort> files);
+
+        /// <summary>
+        /// Prepare single file for soring
+        /// </summary>
+        /// <param name="file"></param>
+        File2Sort PrepareForSorting(File2Sort file);
     }
 }

@@ -69,6 +69,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="al\aldi\sortit\views\AlphaGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -76,7 +80,12 @@
     <Compile Include="al\aldi\sortit\control\FileExistsException.cs" />
     <Compile Include="al\aldi\sortit\control\ISort.cs" />
     <Compile Include="al\aldi\sortit\control\SortFilesAlpha.cs" />
+    <Compile Include="al\aldi\sortit\control\SortFilesDate.cs" />
+    <Compile Include="al\aldi\sortit\control\SortImpl.cs" />
     <Compile Include="al\aldi\sortit\model\File2Sort.cs" />
+    <Compile Include="al\aldi\sortit\views\AlphaGrid.xaml.cs">
+      <DependentUpon>AlphaGrid.xaml</DependentUpon>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -20,6 +20,12 @@ namespace Sortit.al.aldi.sortit.model
         public FileInfo RawSourceFile { get; set; }    // the raw c# file representation
         public FileInfo RawDestinationFile { get; set; }    // the raw c# file representation
         public String FullDestination { get; private set; } // the destination full path with changes and filename
+        public DateTime CreatedDateTime { 
+            get { 
+
+                return RawSourceFile.CreationTimeUtc; 
+            } 
+        }
 
         public bool IsAlphaNumeric
         {

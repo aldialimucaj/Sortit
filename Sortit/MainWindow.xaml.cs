@@ -37,15 +37,15 @@ namespace Sortit
         //        long generalSize = 0;
         //        long itemsCount = 0;
 
-        private readonly BackgroundWorker worker = new BackgroundWorker();
+        private readonly BackgroundWorker workerPrepareSorting = new BackgroundWorker();
 
         public MainWindow()
         {
             InitializeComponent();
 
             // Registering background worker for intense computation
-            worker.DoWork += worker_DoWork;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            workerPrepareSorting.DoWork += worker_DoWork;
+            workerPrepareSorting.RunWorkerCompleted += worker_RunWorkerCompleted;
 
             // Setting the window Icon
             var iconStream = new MemoryStream();
@@ -54,12 +54,19 @@ namespace Sortit
             iconStream.Seek(0, SeekOrigin.Begin);
             Icon = BitmapFrame.Create(iconStream);
 
+            mnItemExit.Click += mnItemExit_Click;
+
             // Console for debug purposes
 #if DEBUG
             AllocConsole();
 #endif
         }
 
+        /// <summary>
+        /// Handles Worker's resolution.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
@@ -78,12 +85,25 @@ namespace Sortit
             }
         }
 
+        /// <summary>
+        /// Executes a background worker for prepraring the files for sorting and adding them to the tree.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker bw = sender as BackgroundWorker;
 
             // get the right object type here
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>> arg = e.Argument as Tuple<System.Windows.Controls.TreeView, IList<File2Sort>>;
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = e.Argument as Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>;
+
+            // prepare the files for sorting.
+            // generates the desired path
+            ISort algorithm = arg.Item3;
+            if (null != algorithm)
+            {
+                algorithm.PrepareForSorting(arg.Item2);
+            }
 
             AddItemsToTree(bw, arg.Item1, arg.Item2);
 
@@ -109,24 +129,22 @@ namespace Sortit
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig);
 
+            ISort algorithm = GetSelectedAlgorithm();
+
             // Adding entries in the treeView
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>>(tvFilesTree, files);
-            worker.RunWorkerAsync(arg);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, algorithm);
+            workerPrepareSorting.RunWorkerAsync(arg);
 
             // Status bar update 
             UpdateStatusBar(arg.Item2);
 
-            ISort algorithm = GetSelectedAlgorithm();
-            if (null != algorithm)
+            await algorithm.SortAsync(files);
+            // clean up
+            if (chckCleanEmptyDir.IsChecked.Value)
             {
-                algorithm.PrepareForSorting(files);
-                await algorithm.SortAsync(files);
-                if (chckCleanEmptyDir.IsChecked.Value)
-                {
-                    // cleaning both source and destination folders for empty directories
-                    IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
-                    IOUtils.CleanEmptyDirs(txtSourceFolder.Text);
-                }
+                // cleaning both source and destination folders for empty directories
+                IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
+                IOUtils.CleanEmptyDirs(txtSourceFolder.Text);
             }
 
         }
@@ -142,14 +160,10 @@ namespace Sortit
             //RegisterObserver(files);
 
             ISort algorithm = GetSelectedAlgorithm();
-            if (null != algorithm)
-            {
-                algorithm.PrepareForSorting(files);
-            }
 
             // Adding entries in the treeView
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>>(tvFilesTree, files);
-            worker.RunWorkerAsync(arg);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, algorithm);
+            workerPrepareSorting.RunWorkerAsync(arg);
 
             // Status bar update 
             UpdateStatusBar(arg.Item2);
@@ -189,7 +203,7 @@ namespace Sortit
 
         private void AddItemToTree(System.Windows.Controls.TreeView tree, File2Sort file)
         {
-           
+
             //var retInt = tree.Items.Add(itemRoot);
             tree.Dispatcher.Invoke(new Action(delegate()
             {
@@ -198,6 +212,7 @@ namespace Sortit
                 itemRoot.Items.Add("Source :-> " + file.FilePath);
                 itemRoot.Items.Add("Destination :-> " + file.FullDestination);
                 itemRoot.Items.Add("Size :-> " + (file.RawSourceFile.Length / (1024 * 1024)) + " MB");
+                itemRoot.Items.Add("Created :-> " + file.CreatedDateTime);
 
                 tree.Items.Add(itemRoot);
             }
@@ -235,6 +250,10 @@ namespace Sortit
             {
                 case "alpha":
                     algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text), chckCopy.IsChecked.Value);
+                    break;
+
+                case "date":
+                    algorithm = new SortFilesDate(txtDestinationFolder.Text, txtDepth.Text, chckCopy.IsChecked.Value);
                     break;
             }
 
@@ -389,6 +408,20 @@ namespace Sortit
             long generalSize = (from f in files select f.RawSourceFile.Length).Sum() / (1024 * 1024);
             txtGeneralSizeValue.Text = generalSize.ToString() + " MB";
             txtItemsCount.Text = files.Count.ToString();
+
+        }
+
+        private void mnItemExit_Click(object o, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        private sealed class AlgorithmDataTemplateSelector : DataTemplateSelector
+        {
+            public override DataTemplate SelectTemplate(object item, DependencyObject container)
+            {
+                return base.SelectTemplate(item, container);
+            }
 
         }
 

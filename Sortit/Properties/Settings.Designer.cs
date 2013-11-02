@@ -26,108 +26,108 @@ namespace Sortit.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string crawl_pattern {
+        public string txtPattern {
             get {
-                return ((string)(this["crawl_pattern"]));
+                return ((string)(this["txtPattern"]));
             }
             set {
-                this["crawl_pattern"] = value;
+                this["txtPattern"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string dir_source {
+        public string txtDestinationFolder {
             get {
-                return ((string)(this["dir_source"]));
+                return ((string)(this["txtDestinationFolder"]));
             }
             set {
-                this["dir_source"] = value;
+                this["txtDestinationFolder"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string dir_destination {
+        public string txtSourceFolder {
             get {
-                return ((string)(this["dir_destination"]));
+                return ((string)(this["txtSourceFolder"]));
             }
             set {
-                this["dir_destination"] = value;
+                this["txtSourceFolder"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int value_depth {
+        public int SortingType {
             get {
-                return ((int)(this["value_depth"]));
+                return ((int)(this["SortingType"]));
             }
             set {
-                this["value_depth"] = value;
+                this["SortingType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chckCleanEmptyDir {
+            get {
+                return ((bool)(this["chckCleanEmptyDir"]));
+            }
+            set {
+                this["chckCleanEmptyDir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chckIgnoreNonAlpha {
+            get {
+                return ((bool)(this["chckIgnoreNonAlpha"]));
+            }
+            set {
+                this["chckIgnoreNonAlpha"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int sort_type {
+        public string txtDepth {
             get {
-                return ((int)(this["sort_type"]));
+                return ((string)(this["txtDepth"]));
             }
             set {
-                this["sort_type"] = value;
+                this["txtDepth"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chck_clean_dir {
+        public bool chckCopy {
             get {
-                return ((bool)(this["chck_clean_dir"]));
+                return ((bool)(this["chckCopy"]));
             }
             set {
-                this["chck_clean_dir"] = value;
+                this["chckCopy"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chck_ignore_non_alpha {
+        public bool chckShowSorted {
             get {
-                return ((bool)(this["chck_ignore_non_alpha"]));
+                return ((bool)(this["chckShowSorted"]));
             }
             set {
-                this["chck_ignore_non_alpha"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chck_copy {
-            get {
-                return ((bool)(this["chck_copy"]));
-            }
-            set {
-                this["chck_copy"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chck_show_sorted {
-            get {
-                return ((bool)(this["chck_show_sorted"]));
-            }
-            set {
-                this["chck_show_sorted"] = value;
+                this["chckShowSorted"] = value;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Sortit.al.aldi.sortit.control;
 using Sortit.al.aldi.sortit.model;
+using Sortit.al.aldi.sortit.views;
 using Sortit.Properties;
 using System;
 using System.Collections.Generic;
@@ -140,6 +141,7 @@ namespace Sortit
 
             await algorithm.SortAsync(files);
             // clean up
+            System.Windows.Controls.CheckBox chckCleanEmptyDir = (System.Windows.Controls.CheckBox)Template.FindName("chckCleanEmptyDir", this);
             if (chckCleanEmptyDir.IsChecked.Value)
             {
                 // cleaning both source and destination folders for empty directories
@@ -227,11 +229,11 @@ namespace Sortit
 
 
             // variable checks
-            if (chckIgnoreNonAlpha.IsChecked.Value)
+            if (AlphaGridElement.chckIgnoreNonAlpha.IsChecked.Value)
             {
                 fileChecked &= file.IsAlphaNumeric;
             }
-            if (!chckShowSorted.IsChecked.Value)
+            if (!AlphaGridElement.chckShowSorted.IsChecked.Value)
             {
 
                 file.SetDestinationFullPath(GetSelectedAlgorithm().RenameFunc);
@@ -249,11 +251,11 @@ namespace Sortit
             switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
                 case "alpha":
-                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(txtDepth.Text), chckCopy.IsChecked.Value);
+                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(AlphaGridElement.txtDepth.Text), AlphaGridElement.chckCopy.IsChecked.Value);
                     break;
 
                 case "date":
-                    algorithm = new SortFilesDate(txtDestinationFolder.Text, txtDepth.Text, chckCopy.IsChecked.Value);
+                    algorithm = new SortFilesDate(txtDestinationFolder.Text, AlphaGridElement.txtDepth.Text, AlphaGridElement.chckCopy.IsChecked.Value);
                     break;
             }
 
@@ -270,7 +272,7 @@ namespace Sortit
             {
                 txtSourceFolder.Text = dlg.SelectedPath;
 
-                Settings.Default["dir_source"] = txtSourceFolder.Text;
+                Settings.Default[txtSourceFolder.Name] = txtSourceFolder.Text;
                 Settings.Default.Save();
             }
         }
@@ -295,88 +297,25 @@ namespace Sortit
         {
             Properties.Settings.Default.Save();
         }
-
-        private void txtDestinationFolder_TextChanged(object sender, TextChangedEventArgs e)
+               
+        private void saveControlChanges(object sender, RoutedEventArgs e)
         {
-            Settings.Default["dir_destination"] = txtDestinationFolder.Text;
-            Properties.Settings.Default.Save();
-        }
+            if (sender is System.Windows.Controls.TextBox)
+            {
+                System.Windows.Controls.TextBox box = sender as System.Windows.Controls.TextBox;
+                Settings.Default[box.Name] = box.Text;
+            }
+            else if (sender is System.Windows.Controls.CheckBox)
+            {
+                System.Windows.Controls.CheckBox box = sender as System.Windows.Controls.CheckBox;
+                Settings.Default[box.Name] = !box.IsChecked;
+            }
+            else if (sender is System.Windows.Controls.CheckBox)
+            {
+                System.Windows.Controls.ComboBox box = sender as System.Windows.Controls.ComboBox;
+                Settings.Default[box.Name] = box.SelectedIndex;
+            }
 
-        private void txtSourceFolder_Textchanged(object sender, TextChangedEventArgs e)
-        {
-            Settings.Default["dir_source"] = txtSourceFolder.Text;
-            Properties.Settings.Default.Save();
-        }
-
-        private void txtDepth_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Settings.Default["value_depth"] = Int32.Parse(txtDepth.Text);
-            Properties.Settings.Default.Save();
-        }
-
-        private void SortingType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Settings.Default["sort_type"] = SortingType.SelectedIndex;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckCleanEmptyDir_UnCheck(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_clean_dir"] = chckCleanEmptyDir.IsEnabled;
-            Properties.Settings.Default.Save();
-        }
-
-        private void txtPattern_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Settings.Default["crawl_pattern"] = txtPattern.Text;
-            Settings.Default.Save();
-        }
-
-        private void chckIgnoreNonAlpha_Checked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_ignore_non_alpha"] = true;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckIgnoreNonAlpha_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_ignore_non_alpha"] = false;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckCleanEmptyDir_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_clean_dir"] = false;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckCleanEmptyDir_Checked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_clean_dir"] = true;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckCopy_Checked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_copy"] = true;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckCopy_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_copy"] = false;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckShowSorted_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_show_sorted"] = false;
-            Properties.Settings.Default.Save();
-        }
-
-        private void chckShowSorted_Checked(object sender, RoutedEventArgs e)
-        {
-            Settings.Default["chck_show_sorted"] = true;
             Properties.Settings.Default.Save();
         }
 

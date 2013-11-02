@@ -5,7 +5,7 @@
         xmlns:views="clr-namespace:Sortit.al.aldi.sortit.views"
         >
     <Grid>
-        <DockPanel LastChildFill="True">
+        <DockPanel LastChildFill="True" Name="elementsDockPanel">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_Open"></MenuItem>
@@ -43,7 +43,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Start</Button>
-                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
+                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="saveControlChanges" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
                         <ComboBoxItem Name="alpha">Alphabetically [A-Z]</ComboBoxItem>
                         <ComboBoxItem Name="date">Date</ComboBoxItem>
                     </ComboBox>
@@ -52,65 +52,12 @@
                              Grid.Column="1" 
                              Name="txtPattern" 
                              Text="{Binding Source={StaticResource Settings}, Path=Default.crawl_pattern}" 
-                             TextChanged="txtPattern_TextChanged" 
+                             TextChanged="saveControlChanges" 
                              ToolTip="File Pattern to be looking for"
                              />
                     
                 </Grid>
-                <Grid DockPanel.Dock="Top">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <CheckBox Grid.Row="0" 
-                              Grid.Column="0" 
-                              Name="chckCleanEmptyDir" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_clean_dir}"
-                              Margin="5" 
-                              Checked="chckCleanEmptyDir_Checked"
-                              Unchecked="chckCleanEmptyDir_Unchecked"
-                              >Clean up Empty Directories</CheckBox>
-                    <CheckBox Grid.Row="0" 
-                              Grid.Column="1" 
-                              Name="chckIgnoreNonAlpha" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_ignore_non_alpha}"
-                              Margin="5" 
-                              Checked="chckIgnoreNonAlpha_Checked"
-                              Unchecked="chckIgnoreNonAlpha_Unchecked"
-                              >Ignore non Alpha-Numeric Names</CheckBox>
-                    <TextBox Grid.Row="0" 
-                             Grid.Column="2" 
-                             Name="txtDepth" 
-                             Text="{Binding Source={StaticResource Settings}, Path=Default.value_depth}" 
-                             TextChanged="txtDepth_TextChanged"
-                             Padding="5"
-                             ToolTip="Depth according to selected sorting algorithm"
-                             ></TextBox>
-                    <CheckBox Grid.Row="1" 
-                              Grid.Column="0" 
-                              Name="chckCopy" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_copy}"
-                              Margin="5" 
-                              Checked="chckCopy_Checked"
-                              Unchecked="chckCopy_Unchecked"
-                              >Copy Files</CheckBox>
-                    <CheckBox Grid.Row="1" 
-                              Grid.Column="1" 
-                              Name="chckShowSorted" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chck_show_sorted}"
-                              Margin="5" 
-                              Checked="chckShowSorted_Checked"
-                              Unchecked="chckShowSorted_Unchecked"
-                              >Show already sorted files</CheckBox>
-
-                </Grid>
+                <views:AlphaGrid DockPanel.Dock="Top" x:Name="AlphaGridElement"/>
                 <Grid DockPanel.Dock="Top">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -123,7 +70,7 @@
                     <Button Grid.Row="0" Grid.Column="0" Margin="10,2,10,2" VerticalAlignment="Bottom" Name="btnSourceFolder" Click="btnSourceFolder_Click">Source</Button>
                     <TextBox Grid.Row="0" Grid.Column="1" Name="txtSourceFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.dir_source}"/>
                     <Button Grid.Row="1" Grid.Column="0" Margin="10,2,10,2" Name="btnDestinationFolder" Click="btnDestinationFolder_Click">Destination</Button>
-                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtDestinationFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.dir_destination}" TextChanged="txtDestinationFolder_TextChanged"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtDestinationFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.dir_destination}" TextChanged="saveControlChanges"/>
                 </Grid>
 
                 <TreeView Name="tvFilesTree" DockPanel.Dock="Bottom" />

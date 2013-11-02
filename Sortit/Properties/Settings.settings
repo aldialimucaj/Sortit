@@ -2,31 +2,31 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Sortit.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="crawl_pattern" Type="System.String" Scope="User">
+    <Setting Name="txtPattern" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="dir_source" Type="System.String" Scope="User">
+    <Setting Name="txtDestinationFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="dir_destination" Type="System.String" Scope="User">
+    <Setting Name="txtSourceFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="value_depth" Type="System.Int32" Scope="User">
+    <Setting Name="SortingType" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="sort_type" Type="System.Int32" Scope="User">
+    <Setting Name="chckCleanEmptyDir" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="chckIgnoreNonAlpha" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="txtDepth" Type="System.String" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="chck_clean_dir" Type="System.Boolean" Scope="User">
+    <Setting Name="chckCopy" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="chck_ignore_non_alpha" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="chck_copy" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="chck_show_sorted" Type="System.Boolean" Scope="User">
+    <Setting Name="chckShowSorted" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sortit.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,22 @@ namespace Sortit.al.aldi.sortit.views
         public AlphaGrid()
         {
             InitializeComponent();
+        }
+
+        private void saveControlChanges(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox)
+            {
+                TextBox box = sender as TextBox;
+                Settings.Default[box.Name] = box.Text;
+            }
+            else if (sender is CheckBox)
+            {
+                CheckBox box = sender as CheckBox;
+                Settings.Default[box.Name] = !box.IsChecked;
+            }
+
+            Properties.Settings.Default.Save();
         }
 
     }

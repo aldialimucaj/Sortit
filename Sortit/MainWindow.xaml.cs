@@ -41,9 +41,18 @@ namespace Sortit
         private readonly BackgroundWorker workerPrepareSorting = new BackgroundWorker();
         private ISort Algorithm = null;
 
+        private delegate void UpdateSortFilesDelegate();
+        private event UpdateSortFilesDelegate UpdateSortFilesEvent;
+
+        private IList<File2Sort> _sortFiles = null;
+        private IList<File2Sort> SortFiles { get { return _sortFiles; } set { _sortFiles = value; UpdateSortFilesEvent(); } }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            UpdateSortFilesEvent = UpdateStartButton;
+            UpdateSortFilesEvent();
 
             // Registering background worker for intense computation
             workerPrepareSorting.DoWork += worker_DoWork;
@@ -125,25 +134,10 @@ namespace Sortit
         /// <param name="e"></param>
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
-            IList<File2Sort> files = null;
-
-            Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
-            files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig);
-
-            Algorithm = GetSelectedAlgorithm();
-
-            // Adding entries in the treeView
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, Algorithm);
-            workerPrepareSorting.RunWorkerAsync(arg);
-
-            // Status bar update 
-            UpdateStatusBar(arg.Item2);
-
-            await Algorithm.SortAsync(files);
+            await Algorithm.SortAsync(SortFiles);
             // clean up
-            System.Windows.Controls.CheckBox chckCleanEmptyDir = (System.Windows.Controls.CheckBox)Template.FindName("chckCleanEmptyDir", this);
-            if (chckCleanEmptyDir.IsChecked.Value)
+
+            if (AlphaGridElement.chckCleanEmptyDir.IsChecked.Value)
             {
                 // cleaning both source and destination folders for empty directories
                 IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
@@ -155,19 +149,28 @@ namespace Sortit
 
         private async void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
+            if(txtSourceFolder.Text.Equals(""))
+            {
+                System.Windows.MessageBox.Show("Cant crawl an empty dir!");
+                return;
+            }
+            if (txtDestinationFolder.Text.Equals(""))
+            {
+                txtDestinationFolder.Text = txtSourceFolder.Text;
+            }
+
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
-            IList<File2Sort> files = null;
+            
 
             Algorithm = GetSelectedAlgorithm();
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
-            files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
+            SortFiles = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
             //RegisterObserver(files);
-
-            
+      
 
             // Adding entries in the treeView
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, Algorithm);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, SortFiles, Algorithm);
             workerPrepareSorting.RunWorkerAsync(arg);
 
             // Status bar update 
@@ -290,7 +293,7 @@ namespace Sortit
             {
                 txtDestinationFolder.Text = dlg.SelectedPath;
 
-                Settings.Default["dir_destination"] = txtDestinationFolder.Text;
+                Settings.Default[txtDestinationFolder.Name] = txtDestinationFolder.Text;
                 Settings.Default.Save();
             }
         }
@@ -337,6 +340,11 @@ namespace Sortit
             {
                 file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(this.UpdateFileChanged);
             }
+        }
+
+        private void UpdateStartButton()
+        {
+            btnStart.IsEnabled = SortFiles != null;
         }
 
         public void UpdateFileChanged(File2Sort file)

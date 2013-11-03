@@ -12,11 +12,47 @@ namespace Sortit.al.aldi.sortit.control
         String Destination {get; set;}
         String DatePattern { get; set; }
         bool Copy { get; set; }
+        DateSortType SortType { get; set; }
+
+        public enum DateSortType
+        {
+            YYYYMMDD,
+            YYYYMMDD_subs,
+            YYYYMMDDHH_subs
+        }
 
         public SortFilesDate(String dest, String pattern, bool copy) : base(copy)
         {
             Destination = dest;
             DatePattern = pattern;
+            SortType = DateSortType.YYYYMMDD;
+        }
+
+        public SortFilesDate(String dest, String pattern, bool copy, DateSortType sortType)
+            : base(copy)
+        {
+            Destination = dest;
+            DatePattern = pattern;
+            SortType = sortType;
+        }
+
+        public SortFilesDate(String dest, String pattern, bool copy, String sortType)
+            : base(copy)
+        {
+            Destination = dest;
+            DatePattern = pattern;
+            switch (sortType)
+            {
+                case "ymd":
+                    SortType = DateSortType.YYYYMMDD;
+                    break;
+                case "ymd_subs":
+                    SortType = DateSortType.YYYYMMDD_subs;
+                    break;
+                case "ymdh_subs":
+                    SortType = DateSortType.YYYYMMDDHH_subs;
+                    break;
+            }
         }
 
         /// <summary>
@@ -30,7 +66,20 @@ namespace Sortit.al.aldi.sortit.control
             returnPath = returnPath.EndsWith("\\") ? returnPath : returnPath + "\\";
 
             DateTime dt = file.CreatedDateTime;
-            String dateReverse = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + "\\";
+            String dateReverse = "";
+            switch (SortType)
+            {
+                case DateSortType.YYYYMMDD:
+                    dateReverse = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + "\\";
+                    break;
+                case DateSortType.YYYYMMDD_subs:
+                    dateReverse = dt.Year.ToString() + "\\" + dt.Month.ToString() + "\\" + dt.Day.ToString() + "\\";
+                    break;
+                case DateSortType.YYYYMMDDHH_subs:
+                    dateReverse = dt.Year.ToString() + "\\" + dt.Month.ToString() + "\\" + dt.Day.ToString() + "\\" + dt.Hour.ToString()  + "\\";
+                    break;
+            }
+            
             returnPath += dateReverse + file.FileName;
 
             return returnPath;

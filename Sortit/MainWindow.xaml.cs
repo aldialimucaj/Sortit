@@ -39,6 +39,7 @@ namespace Sortit
         //        long itemsCount = 0;
 
         private readonly BackgroundWorker workerPrepareSorting = new BackgroundWorker();
+        private ISort Algorithm = null;
 
         public MainWindow()
         {
@@ -130,16 +131,16 @@ namespace Sortit
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig);
 
-            ISort algorithm = GetSelectedAlgorithm();
+            Algorithm = GetSelectedAlgorithm();
 
             // Adding entries in the treeView
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, algorithm);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, Algorithm);
             workerPrepareSorting.RunWorkerAsync(arg);
 
             // Status bar update 
             UpdateStatusBar(arg.Item2);
 
-            await algorithm.SortAsync(files);
+            await Algorithm.SortAsync(files);
             // clean up
             System.Windows.Controls.CheckBox chckCleanEmptyDir = (System.Windows.Controls.CheckBox)Template.FindName("chckCleanEmptyDir", this);
             if (chckCleanEmptyDir.IsChecked.Value)
@@ -157,14 +158,16 @@ namespace Sortit
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
             IList<File2Sort> files = null;
 
+            Algorithm = GetSelectedAlgorithm();
+
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             files = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
             //RegisterObserver(files);
 
-            ISort algorithm = GetSelectedAlgorithm();
+            
 
             // Adding entries in the treeView
-            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, algorithm);
+            Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, files, Algorithm);
             workerPrepareSorting.RunWorkerAsync(arg);
 
             // Status bar update 
@@ -236,7 +239,7 @@ namespace Sortit
             if (!AlphaGridElement.chckShowSorted.IsChecked.Value)
             {
 
-                file.SetDestinationFullPath(GetSelectedAlgorithm().RenameFunc);
+                file.SetDestinationFullPath(Algorithm.RenameFunc);
                 fileChecked &= file.IsAlreadySorted;
             }
 
@@ -255,7 +258,7 @@ namespace Sortit
                     break;
 
                 case "date":
-                    algorithm = new SortFilesDate(txtDestinationFolder.Text, AlphaGridElement.txtDepth.Text, AlphaGridElement.chckCopy.IsChecked.Value);
+                    algorithm = new SortFilesDate(txtDestinationFolder.Text, AlphaGridElement.txtDepth.Text, AlphaGridElement.chckCopy.IsChecked.Value, ((ComboBoxItem)DateGridElement.cmbSortType.SelectedItem).Name);
                     break;
             }
 
@@ -310,7 +313,7 @@ namespace Sortit
                 System.Windows.Controls.CheckBox box = sender as System.Windows.Controls.CheckBox;
                 Settings.Default[box.Name] = !box.IsChecked;
             }
-            else if (sender is System.Windows.Controls.CheckBox)
+            else if (sender is System.Windows.Controls.ComboBox)
             {
                 System.Windows.Controls.ComboBox box = sender as System.Windows.Controls.ComboBox;
                 Settings.Default[box.Name] = box.SelectedIndex;
@@ -362,6 +365,28 @@ namespace Sortit
                 return base.SelectTemplate(item, container);
             }
 
+        }
+
+        private void SortingType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            saveControlChanges(sender, e);
+                        
+            
+
+            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
+            {
+                case "alpha":
+                    this.mainPanel.Children.Remove(DateGridElement);
+                    if(!this.mainPanel.Children.Contains(AlphaGridElement))
+                        this.mainPanel.Children.Insert(2, AlphaGridElement);
+                    break;
+
+                case "date":
+                    this.mainPanel.Children.Remove(AlphaGridElement);
+                    if (!this.mainPanel.Children.Contains(DateGridElement))
+                        this.mainPanel.Children.Insert(2, DateGridElement);
+                    break;
+            }
         }
 
 

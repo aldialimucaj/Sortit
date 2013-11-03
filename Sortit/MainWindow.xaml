@@ -4,7 +4,12 @@
         Title="Sortit" Height="350" Width="525" 
         xmlns:views="clr-namespace:Sortit.al.aldi.sortit.views"
         >
-    <Grid>
+    <Window.Resources>
+        <DataTemplate x:Key="algorithmAlphaTemplate">
+            <ContentPresenter Content="{Binding Path=Control}"/>    
+        </DataTemplate>
+    </Window.Resources>
+    <Grid Name="MainGrid">
         <DockPanel LastChildFill="True" Name="elementsDockPanel">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
@@ -43,7 +48,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Start</Button>
-                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="saveControlChanges" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
+                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
                         <ComboBoxItem Name="alpha">Alphabetically [A-Z]</ComboBoxItem>
                         <ComboBoxItem Name="date">Date</ComboBoxItem>
                     </ComboBox>
@@ -57,7 +62,9 @@
                              />
                     
                 </Grid>
-                <views:AlphaGrid DockPanel.Dock="Top" x:Name="AlphaGridElement"/>
+
+                
+                
                 <Grid DockPanel.Dock="Top">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -73,7 +80,13 @@
                     <TextBox Grid.Row="1" Grid.Column="1" Name="txtDestinationFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.dir_destination}" TextChanged="saveControlChanges"/>
                 </Grid>
 
-                <TreeView Name="tvFilesTree" DockPanel.Dock="Bottom" />
+                <views:AlphaGrid DockPanel.Dock="Top" x:Name="AlphaGridElement"/>
+                <views:DateGrid DockPanel.Dock="Top" x:Name="DateGridElement"/>
+
+                <TreeView Name="tvFilesTree" DockPanel.Dock="Bottom">
+                    <TreeViewItem>Empty</TreeViewItem>
+                </TreeView>
+                
                 
             </DockPanel>
 

@@ -73,6 +73,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="al\aldi\sortit\views\DateGrid.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -85,6 +89,9 @@
     <Compile Include="al\aldi\sortit\model\File2Sort.cs" />
     <Compile Include="al\aldi\sortit\views\AlphaGrid.xaml.cs">
       <DependentUpon>AlphaGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="al\aldi\sortit\views\DateGrid.xaml.cs">
+      <DependentUpon>DateGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

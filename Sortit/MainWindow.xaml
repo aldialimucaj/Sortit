@@ -8,6 +8,9 @@
         <DataTemplate x:Key="algorithmAlphaTemplate">
             <ContentPresenter Content="{Binding Path=Control}"/>    
         </DataTemplate>
+
+        <views:AlphaGrid DockPanel.Dock="Top" x:Name="AlphaGridElement" x:Key="alphaGridInstance"/>
+        <views:DateGrid DockPanel.Dock="Top" x:Name="DateGridElement" x:Key="dateGridInstance"/>
     </Window.Resources>
     <Grid Name="MainGrid">
         <DockPanel LastChildFill="True" Name="elementsDockPanel">
@@ -80,11 +83,10 @@
                     <TextBox Grid.Row="1" Grid.Column="1" Name="txtDestinationFolder" Text="{Binding Source={StaticResource Settings}, Path=Default.txtDestinationFolder}" TextChanged="saveControlChanges"/>
                 </Grid>
 
-                <views:AlphaGrid DockPanel.Dock="Top" x:Name="AlphaGridElement"/>
-                <views:DateGrid DockPanel.Dock="Top" x:Name="DateGridElement"/>
+                
+                
 
                 <TreeView Name="tvFilesTree" DockPanel.Dock="Bottom">
-                    <TreeViewItem>Empty</TreeViewItem>
                 </TreeView>
                 
                 

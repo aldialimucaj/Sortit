@@ -38,6 +38,12 @@ namespace Sortit
         //        long generalSize = 0;
         //        long itemsCount = 0;
 
+        const String ALPHA_GRID_INSTANCE = "alphaGridInstance";
+        const String DATE_GRID_INSTANCE = "dateGridInstance";
+
+        AlphaGrid alphaGridInstance = null;
+        DateGrid dateGridInstance = null;
+
         private readonly BackgroundWorker workerPrepareSorting = new BackgroundWorker();
         private ISort Algorithm = null;
 
@@ -53,6 +59,9 @@ namespace Sortit
 
             UpdateSortFilesEvent = UpdateStartButton;
             UpdateSortFilesEvent();
+
+            alphaGridInstance = FindResource(ALPHA_GRID_INSTANCE) as AlphaGrid;
+            dateGridInstance = FindResource(DATE_GRID_INSTANCE) as DateGrid;
 
             // Registering background worker for intense computation
             workerPrepareSorting.DoWork += worker_DoWork;
@@ -137,7 +146,7 @@ namespace Sortit
             await Algorithm.SortAsync(SortFiles);
             // clean up
 
-            if (AlphaGridElement.chckCleanEmptyDir.IsChecked.Value)
+            if (alphaGridInstance.chckCleanEmptyDir.IsChecked.Value)
             {
                 // cleaning both source and destination folders for empty directories
                 IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
@@ -233,13 +242,12 @@ namespace Sortit
 
             //compulsory checks
 
-
             // variable checks
-            if (AlphaGridElement.chckIgnoreNonAlpha.IsChecked.Value)
+            if (alphaGridInstance.chckIgnoreNonAlpha.IsChecked.Value)
             {
                 fileChecked &= file.IsAlphaNumeric;
             }
-            if (!AlphaGridElement.chckShowSorted.IsChecked.Value)
+            if (!alphaGridInstance.chckShowSorted.IsChecked.Value)
             {
 
                 file.SetDestinationFullPath(Algorithm.RenameFunc);
@@ -257,11 +265,11 @@ namespace Sortit
             switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
                 case "alpha":
-                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(AlphaGridElement.txtDepth.Text), AlphaGridElement.chckCopy.IsChecked.Value);
+                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(alphaGridInstance.txtDepth.Text), alphaGridInstance.chckCopy.IsChecked.Value);
                     break;
 
                 case "date":
-                    algorithm = new SortFilesDate(txtDestinationFolder.Text, AlphaGridElement.txtDepth.Text, AlphaGridElement.chckCopy.IsChecked.Value, ((ComboBoxItem)DateGridElement.cmbSortType.SelectedItem).Name);
+                    algorithm = new SortFilesDate(txtDestinationFolder.Text, alphaGridInstance.txtDepth.Text, alphaGridInstance.chckCopy.IsChecked.Value, ((ComboBoxItem)dateGridInstance.cmbSortType.SelectedItem).Name);
                     break;
             }
 
@@ -384,15 +392,15 @@ namespace Sortit
             switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
                 case "alpha":
-                    this.mainPanel.Children.Remove(DateGridElement);
-                    if(!this.mainPanel.Children.Contains(AlphaGridElement))
-                        this.mainPanel.Children.Insert(2, AlphaGridElement);
+                    this.mainPanel.Children.Remove(dateGridInstance);
+                    if(!this.mainPanel.Children.Contains(alphaGridInstance))
+                        this.mainPanel.Children.Insert(2, alphaGridInstance);
                     break;
 
                 case "date":
-                    this.mainPanel.Children.Remove(AlphaGridElement);
-                    if (!this.mainPanel.Children.Contains(DateGridElement))
-                        this.mainPanel.Children.Insert(2, DateGridElement);
+                    this.mainPanel.Children.Remove(alphaGridInstance);
+                    if (!this.mainPanel.Children.Contains(dateGridInstance))
+                        this.mainPanel.Children.Insert(2, dateGridInstance);
                     break;
             }
         }

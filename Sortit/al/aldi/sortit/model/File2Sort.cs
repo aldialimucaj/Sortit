@@ -10,16 +10,61 @@ namespace Sortit.al.aldi.sortit.model
 {
     public class File2Sort
     {
-        public delegate void UpdateFileDelegate(File2Sort file);
+        public enum FileChangesType
+        {
+            FULL_DESTINATION_CHANGED, OPERATION_STARTED, OPERATION_ENDED 
+        }
 
+        public delegate void UpdateFileDelegate(File2Sort file, FileChangesType changeType);
+
+        /// <summary>
+        /// Event triggered when primary attributes have changed
+        /// </summary>
         public event UpdateFileDelegate UpdateFileChanged;
 
-        public String FullPath { get; set; } // the path and name of file
-        public String FileName { get; set; } // just the name of the file
-        public String FilePath { get; set; } // just the path of the parten directory
-        public FileInfo RawSourceFile { get; set; }    // the raw c# file representation
-        public FileInfo RawDestinationFile { get; set; }    // the raw c# file representation
-        public String FullDestination { get; private set; } // the destination full path with changes and filename
+        /// <summary>
+        /// the path and name of file
+        /// </summary>
+        public String FullPath { get; set; } 
+        
+        /// <summary>
+        /// just the name of the file
+        /// </summary>
+        public String FileName { get; set; } 
+        
+        /// <summary>
+        /// just the path of the parten directory
+        /// </summary>
+        public String FilePath { get; set; } 
+        
+        /// <summary>
+        /// the raw c# file representation
+        /// </summary>
+        public FileInfo RawSourceFile { get; set; }    
+        
+        /// <summary>
+        /// the raw c# file representation
+        /// </summary>
+        public FileInfo RawDestinationFile { get; set; }   
+        
+        /// <summary>
+        /// the destination full path with changes and filename
+        /// </summary>
+        public String FullDestination { get; private set; }
+
+        /// <summary>
+        /// when operation starts on this object this flag is set to true
+        /// </summary>
+        public bool Operating { get; private set; } 
+        
+        /// <summary>
+        /// when operation is finished on this object then this flag is set to true
+        /// </summary>
+        public bool OperationFinished { get; private set; } 
+        
+        /// <summary>
+        /// DateTime of Raw Source File
+        /// </summary>
         public DateTime CreatedDateTime { 
             get { 
 
@@ -27,10 +72,17 @@ namespace Sortit.al.aldi.sortit.model
             } 
         }
 
+        /// <summary>
+        /// Does this file fit alpha-numeric naming i.e. starts with a-z 0-9
+        /// </summary>
         public bool IsAlphaNumeric
         {
             get { return SortFilesAlpha.alphabet.Any(s => FileName.ToUpper().StartsWith(s)); }
         }
+
+        /// <summary>
+        /// File exists at the destination
+        /// </summary>
         public bool IsAlreadySorted
         {
             get
@@ -67,7 +119,29 @@ namespace Sortit.al.aldi.sortit.model
         {
             FullDestination = sortFunc(this);
             if(null != UpdateFileChanged)
-                UpdateFileChanged(this);
+                UpdateFileChanged(this, FileChangesType.FULL_DESTINATION_CHANGED);
+        }
+
+        public bool Move()
+        {
+            if (!String.IsNullOrEmpty(FullPath) && !String.IsNullOrEmpty(FullDestination))
+            {
+                UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_STARTED);
+                File.Move(FullPath, FullDestination);
+                return true;
+            }
+            return false;
+        }
+
+        public bool Copy()
+        {
+            if (!String.IsNullOrEmpty(FullPath) && !String.IsNullOrEmpty(FullDestination))
+            {
+                UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_STARTED);
+                File.Copy(FullPath, FullDestination);
+                return true;
+            }
+            return false;
         }
 
         public bool SourceFileExists()

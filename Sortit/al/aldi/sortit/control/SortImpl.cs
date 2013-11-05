@@ -12,6 +12,8 @@ namespace Sortit.al.aldi.sortit.control
     {
         bool Copy { get; set; }
 
+        public abstract string RenameFunc(model.File2Sort file);
+
         public delegate String SortFunction(File2Sort file);
 
         public SortImpl(bool copy)
@@ -41,15 +43,13 @@ namespace Sortit.al.aldi.sortit.control
                 {
                     everythingSuccessful &= await IOUtils.SafeRenameAsync(file);
                 }
-
             }
 
             Console.WriteLine(files);
             return everythingSuccessful;
         }
 
-        public abstract string RenameFunc(model.File2Sort file);
-        
+
 
         /// <summary>
         /// Prepares the files by generating the desired path.
@@ -84,5 +84,30 @@ namespace Sortit.al.aldi.sortit.control
             file.SetDestinationFullPath(_ => rename(_));
             return file;
         }
+
+
+        /// <summary>
+        /// Registers observers for the list of files that will trigger if they change
+        /// </summary>
+        /// <param name="files">list of lifes</param>
+        /// <param name="updateFileDelegate">function to call when each file changes</param>
+        protected void RegisterObserver(IList<File2Sort> files, File2Sort.UpdateFileDelegate updateFileDelegate)
+        {
+            foreach (File2Sort file in files)
+            {
+                file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(updateFileDelegate);
+            }
+        }
+
+        /// <summary>
+        /// Register for this file the delegate which should react to changes on the file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="updateFileDelegate"></param>
+        public void RegisterObserver(File2Sort file, File2Sort.UpdateFileDelegate updateFileDelegate)
+        {
+            file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(updateFileDelegate);
+        }
+
     }
 }

@@ -146,8 +146,7 @@ namespace Sortit
                 try
                 {
                     SafeCreateParents(file.FullDestination);
-                    await Task.Run(() => File.Move(file.FullPath, file.FullDestination) );
-                    return true;
+                    return await Task<bool>.Run(() => file.Move() );
                 }
                 catch (Exception e)
                 {

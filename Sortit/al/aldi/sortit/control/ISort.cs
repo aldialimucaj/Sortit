@@ -34,5 +34,12 @@ namespace Sortit.al.aldi.sortit.control
         /// </summary>
         /// <param name="file"></param>
         File2Sort PrepareForSorting(File2Sort file);
+
+        /// <summary>
+        /// Register objserver for file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="updateFileDelegate"></param>
+        void RegisterObserver(File2Sort file, File2Sort.UpdateFileDelegate updateFileDelegate);
     }
 }

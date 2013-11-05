@@ -35,14 +35,15 @@ namespace Sortit
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
 
-        //        long generalSize = 0;
-        //        long itemsCount = 0;
+        // --------------------------------------------------------------------
 
         const String ALPHA_GRID_INSTANCE = "alphaGridInstance";
         const String DATE_GRID_INSTANCE = "dateGridInstance";
 
         AlphaGrid alphaGridInstance = null;
         DateGrid dateGridInstance = null;
+
+        // --------------------------------------------------------------------
 
         private readonly BackgroundWorker workerPrepareSorting = new BackgroundWorker();
         private ISort Algorithm = null;
@@ -60,6 +61,7 @@ namespace Sortit
             UpdateSortFilesEvent = UpdateStartButton;
             UpdateSortFilesEvent();
 
+            // these are instances of UI objects instantiated in XAML
             alphaGridInstance = FindResource(ALPHA_GRID_INSTANCE) as AlphaGrid;
             dateGridInstance = FindResource(DATE_GRID_INSTANCE) as DateGrid;
 
@@ -135,7 +137,6 @@ namespace Sortit
 
         }
 
-
         /// <summary>
         /// Clicking the start button starts the listing and sorting process.
         /// </summary>
@@ -155,7 +156,11 @@ namespace Sortit
 
         }
 
-
+        /// <summary>
+        /// Calculate the files to be sorted
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
             if(txtSourceFolder.Text.Equals(""))
@@ -186,10 +191,6 @@ namespace Sortit
             UpdateStatusBar(arg.Item2);
         }
 
-
-
-
-
         /// <summary>
         /// Adds items to the list view. Should be run in background and called by a background worker.
         /// </summary>
@@ -210,6 +211,8 @@ namespace Sortit
                 if (!bw.CancellationPending)
                 {
                     AddItemToTree(tree, file);
+                    // registering objserver before updating
+                    Algorithm.RegisterObserver(file, UpdateFileChanged);
                 }
                 else
                 {
@@ -225,6 +228,7 @@ namespace Sortit
             tree.Dispatcher.Invoke(new Action(delegate()
             {
                 TreeViewItem itemRoot = new TreeViewItem();
+                itemRoot.Tag = file;
                 itemRoot.Header = file.FileName;
                 itemRoot.Items.Add("Source :-> " + file.FilePath);
                 itemRoot.Items.Add("Destination :-> " + file.FullDestination);
@@ -249,7 +253,7 @@ namespace Sortit
             }
             if (!alphaGridInstance.chckShowSorted.IsChecked.Value)
             {
-
+                // updating the destination path based on the algorithm
                 file.SetDestinationFullPath(Algorithm.RenameFunc);
                 fileChecked &= file.IsAlreadySorted;
             }
@@ -342,22 +346,30 @@ namespace Sortit
         }
 
 
-        private void RegisterObserver(IList<File2Sort> files)
-        {
-            foreach (File2Sort file in files)
-            {
-                file.UpdateFileChanged += new File2Sort.UpdateFileDelegate(this.UpdateFileChanged);
-            }
-        }
-
         private void UpdateStartButton()
         {
-            btnStart.IsEnabled = SortFiles != null;
+            btnStart.IsEnabled = SortFiles != null && SortFiles.Count > 0;
         }
 
-        public void UpdateFileChanged(File2Sort file)
+        private void UpdateFileChanged(File2Sort file, File2Sort.FileChangesType type)
         {
-            //Console.WriteLine("CHANGED: " + file);
+            TreeViewItem foundedItem = null;
+            tvFilesTree.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                foreach (TreeViewItem tvItem in tvFilesTree.Items)
+                {
+                    if (tvItem.Tag == file)
+                    {
+                        foundedItem = tvItem;
+                        break;
+                    }
+                }
+
+                if (null != foundedItem && File2Sort.FileChangesType.OPERATION_STARTED == type)
+                {
+                    foundedItem.FontWeight = FontWeights.Bold;
+                }
+            }));
         }
 
 

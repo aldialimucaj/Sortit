@@ -33,11 +33,6 @@ namespace Sortit.al.aldi.sortit.views
                 TextBox box = sender as TextBox;
                 Settings.Default[box.Name] = box.Text;
             }
-            else if (sender is CheckBox)
-            {
-                CheckBox box = sender as CheckBox;
-                Settings.Default[box.Name] = !box.IsChecked;
-            }
 
             Properties.Settings.Default.Save();
         }

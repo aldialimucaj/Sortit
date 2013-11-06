@@ -10,16 +10,45 @@ namespace Sortit.al.aldi.sortit.control
 {
     public abstract class SortImpl : ISort
     {
+        /// <summary>
+        /// Should the files be copied and not moved then set to true
+        /// </summary>
         bool Copy { get; set; }
 
-        public abstract string RenameFunc(model.File2Sort file);
+        /// <summary>
+        /// Should the destination files if exist be overwritten without promting then set to true
+        /// </summary>
+        bool Overwrite { get; set; }
 
-        public delegate String SortFunction(File2Sort file);
+        /// <summary>
+        /// Function which implements the new destination implementation
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public abstract string RenameFunc(File2Sort file);
 
+        private delegate String SortFunction(File2Sort file);
+
+        /// <summary>
+        /// Sorting Algorithm 
+        /// </summary>
+        /// <param name="copy">Only copy files, doesn't move them</param>
         public SortImpl(bool copy)
         {
             Copy = copy;
         }
+
+        /// <summary>
+        /// Sorting Algorithm
+        /// </summary>
+        /// <param name="copy">Only copy files, doesn't move them</param>
+        /// <param name="overwrite">Overwritte destination if exists</param>
+        public SortImpl(bool copy, bool overwrite)
+        {
+            Copy = copy;
+            Overwrite = overwrite;
+        }
+
 
         /// <summary>
         /// Sorts the files by moving or copying, depending on the attribute <b>Copy</b>
@@ -34,18 +63,17 @@ namespace Sortit.al.aldi.sortit.control
             foreach (File2Sort file in files)
             {
                 file.SetDestinationFullPath(_ => rename(_));
-                Console.WriteLine(file.FullDestination);
+
                 if (Copy)
                 {
-                    everythingSuccessful &= await IOUtils.SafeCopyAsync(file);
+                    everythingSuccessful &= await IOUtils.SafeCopyAsync(file, Overwrite);
                 }
                 else
                 {
-                    everythingSuccessful &= await IOUtils.SafeRenameAsync(file);
+                    everythingSuccessful &= await IOUtils.SafeMoveAsync(file, Overwrite);
                 }
             }
 
-            Console.WriteLine(files);
             return everythingSuccessful;
         }
 

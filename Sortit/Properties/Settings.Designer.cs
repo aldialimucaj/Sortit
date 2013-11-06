@@ -130,5 +130,17 @@ namespace Sortit.Properties {
                 this["chckShowSorted"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chckOverwriteExisting {
+            get {
+                return ((bool)(this["chckOverwriteExisting"]));
+            }
+            set {
+                this["chckOverwriteExisting"] = value;
+            }
+        }
     }
 }

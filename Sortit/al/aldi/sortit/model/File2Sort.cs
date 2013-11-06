@@ -5,14 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Sortit.al.aldi.sortit.control;
+using log4net;
 
 namespace Sortit.al.aldi.sortit.model
 {
     public class File2Sort
     {
+        private static readonly ILog x = LogManager.GetLogger("File2Sort");
+
         public enum FileChangesType
         {
-            FULL_DESTINATION_CHANGED, OPERATION_STARTED, OPERATION_ENDED 
+            FULL_DESTINATION_CHANGED, OPERATION_STARTED, OPERATION_ENDED
         }
 
         public delegate void UpdateFileDelegate(File2Sort file, FileChangesType changeType);
@@ -25,28 +28,28 @@ namespace Sortit.al.aldi.sortit.model
         /// <summary>
         /// the path and name of file
         /// </summary>
-        public String FullPath { get; set; } 
-        
+        public String FullPath { get; set; }
+
         /// <summary>
         /// just the name of the file
         /// </summary>
-        public String FileName { get; set; } 
-        
+        public String FileName { get; set; }
+
         /// <summary>
         /// just the path of the parten directory
         /// </summary>
-        public String FilePath { get; set; } 
-        
+        public String FilePath { get; set; }
+
         /// <summary>
         /// the raw c# file representation
         /// </summary>
-        public FileInfo RawSourceFile { get; set; }    
-        
+        public FileInfo RawSourceFile { get; set; }
+
         /// <summary>
         /// the raw c# file representation
         /// </summary>
-        public FileInfo RawDestinationFile { get; set; }   
-        
+        public FileInfo RawDestinationFile { get; set; }
+
         /// <summary>
         /// the destination full path with changes and filename
         /// </summary>
@@ -55,21 +58,22 @@ namespace Sortit.al.aldi.sortit.model
         /// <summary>
         /// when operation starts on this object this flag is set to true
         /// </summary>
-        public bool Operating { get; private set; } 
-        
+        public bool Operating { get; private set; }
+
         /// <summary>
         /// when operation is finished on this object then this flag is set to true
         /// </summary>
-        public bool OperationFinished { get; private set; } 
-        
+        public bool OperationFinished { get; private set; }
+
         /// <summary>
         /// DateTime of Raw Source File
         /// </summary>
-        public DateTime CreatedDateTime { 
-            get { 
-
-                return RawSourceFile.CreationTimeUtc; 
-            } 
+        public DateTime CreatedDateTime
+        {
+            get
+            {
+                return RawSourceFile.CreationTimeUtc;
+            }
         }
 
         /// <summary>
@@ -103,7 +107,7 @@ namespace Sortit.al.aldi.sortit.model
         public File2Sort(String file)
             : this(new FileInfo(file))
         {
-            
+
         }
 
         public File2Sort(File2Sort file)
@@ -118,28 +122,50 @@ namespace Sortit.al.aldi.sortit.model
         public void SetDestinationFullPath(Func<File2Sort, String> sortFunc)
         {
             FullDestination = sortFunc(this);
-            if(null != UpdateFileChanged)
+            RawDestinationFile = new FileInfo(FullDestination);
+            if (null != UpdateFileChanged)
                 UpdateFileChanged(this, FileChangesType.FULL_DESTINATION_CHANGED);
         }
 
-        public bool Move()
+        public bool Move(bool overwrite = false)
         {
             if (!String.IsNullOrEmpty(FullPath) && !String.IsNullOrEmpty(FullDestination))
             {
-                UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_STARTED);
-                File.Move(FullPath, FullDestination);
-                return true;
+                // File.Move does not have an overwrite flag so we need to delete destination file ahead of moving
+                // Also make sure that destination and source are not the same otherwise you might delete all your files
+                if (DestinationFileExists() && !FullDestination.Equals(FullPath) && overwrite) File.Delete(FullDestination);
+                try
+                {
+                    UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_STARTED);
+                    File.Move(FullPath, FullDestination);
+                    UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_ENDED);
+                    return true;
+                }
+                catch (IOException e)
+                {
+                    x.Error(e.Message + " - " + this);
+                }
+                
             }
             return false;
         }
 
-        public bool Copy()
+        public bool Copy(bool overwrite = false)
         {
             if (!String.IsNullOrEmpty(FullPath) && !String.IsNullOrEmpty(FullDestination))
             {
-                UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_STARTED);
-                File.Copy(FullPath, FullDestination);
-                return true;
+                try
+                {
+                    UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_STARTED);
+                    File.Copy(FullPath, FullDestination, overwrite);
+                    UpdateFileChanged(this, File2Sort.FileChangesType.OPERATION_ENDED);
+                    return true;
+                }
+                catch (IOException e)
+                {
+                    x.Error(e.Message + " - " + this);
+                }
+                
             }
             return false;
         }

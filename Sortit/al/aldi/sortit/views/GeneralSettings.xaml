@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="Sortit.al.aldi.sortit.views.GeneralSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:Height="Auto" d:Width="Auto">
+    <Grid DockPanel.Dock="Top" Name="GridElement">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <CheckBox Grid.Row="0" 
+                              Grid.Column="0" 
+                              Name="chckCleanEmptyDir" 
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckCleanEmptyDir}"
+                              Margin="5" 
+                              Checked="saveControlChanges"
+                              Unchecked="saveControlChanges"
+                              >Clean up Empty Directories</CheckBox>
+        <CheckBox Grid.Row="0" 
+                              Grid.Column="1" 
+                              Name="chckCopy" 
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckCopy}"
+                              Margin="5" 
+                              Checked="saveControlChanges"
+                              Unchecked="saveControlChanges"
+                              >Copy Files</CheckBox>
+        <CheckBox Grid.Row="0" 
+                              Grid.Column="2" 
+                              Name="chckShowSorted" 
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckShowSorted}"
+                              Margin="5" 
+                              Checked="saveControlChanges"
+                              Unchecked="saveControlChanges"
+                              >Show already sorted files</CheckBox>
+        <CheckBox Grid.Row="0" 
+                              Grid.Column="3" 
+                              Name="chckOverwriteExisting" 
+                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckOverwriteExisting}"
+                              Margin="5" 
+                              Checked="saveControlChanges"
+                              Unchecked="saveControlChanges"
+                              >Overwrite existing files</CheckBox>
+
+    </Grid>
+</UserControl>

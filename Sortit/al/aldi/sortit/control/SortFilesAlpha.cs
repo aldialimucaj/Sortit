@@ -36,6 +36,13 @@ namespace Sortit.al.aldi.sortit.control
             _depth = depth;
         }
 
+        public SortFilesAlpha(String dest, int depth, bool copy, bool overwrite)
+            : base(copy, overwrite)
+        {
+            Destination = dest;
+            _depth = depth;
+        }
+
         /// <summary>
         /// Sorting Function for alphabetically sorting algorithm.
         /// This algorithm would sort the files depending or the recursion depth specified.
@@ -53,9 +60,9 @@ namespace Sortit.al.aldi.sortit.control
 
             int recursion = 0;
 
-            while (recursion <= _depth)
+            while (recursion < _depth )
             {
-                if (file.FileName.Length > recursion)
+                if (file.FileName.Length  > recursion)
                 {
                     returnPath = returnPath.EndsWith("\\") ? returnPath : returnPath + "\\";
 
@@ -71,8 +78,9 @@ namespace Sortit.al.aldi.sortit.control
                 }
                 recursion++;
             }
+            returnPath = returnPath.EndsWith("\\") ? returnPath : returnPath + "\\";
+            returnPath += file.FileName;
 
-            returnPath += "\\" + file.FileName;
             return returnPath;
         }
     }

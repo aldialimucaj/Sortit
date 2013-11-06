@@ -17,11 +17,11 @@ using System.Windows.Shapes;
 namespace Sortit.al.aldi.sortit.views
 {
     /// <summary>
-    /// Interaction logic for AlphaGrid.xaml
+    /// Interaction logic for GeneralSettings.xaml
     /// </summary>
-    public partial class AlphaGrid : UserControl
+    public partial class GeneralSettings : UserControl
     {
-        public AlphaGrid()
+        public GeneralSettings()
         {
             InitializeComponent();
         }
@@ -36,6 +36,5 @@ namespace Sortit.al.aldi.sortit.views
 
             Properties.Settings.Default.Save();
         }
-
     }
 }

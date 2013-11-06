@@ -19,14 +19,6 @@
         </Grid.ColumnDefinitions>
         <CheckBox Grid.Row="0" 
                               Grid.Column="0" 
-                              Name="chckCleanEmptyDir" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckCleanEmptyDir}"
-                              Margin="5" 
-                              Checked="saveControlChanges"
-                              Unchecked="saveControlChanges"
-                              >Clean up Empty Directories</CheckBox>
-        <CheckBox Grid.Row="0" 
-                              Grid.Column="1" 
                               Name="chckIgnoreNonAlpha" 
                               IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckIgnoreNonAlpha}"
                               Margin="5" 
@@ -34,29 +26,13 @@
                               Unchecked="saveControlChanges"
                               >Ignore non Alpha-Numeric Names</CheckBox>
         <TextBox Grid.Row="0" 
-                             Grid.Column="2" 
+                             Grid.Column="1" 
                              Name="txtDepth" 
                              Text="{Binding Source={StaticResource Settings}, Path=Default.txtDepth}" 
                              TextChanged="saveControlChanges"
                              Padding="5"
                              ToolTip="Depth according to selected sorting algorithm"
                              ></TextBox>
-        <CheckBox Grid.Row="1" 
-                              Grid.Column="0" 
-                              Name="chckCopy" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckCopy}"
-                              Margin="5" 
-                              Checked="saveControlChanges"
-                              Unchecked="saveControlChanges"
-                              >Copy Files</CheckBox>
-        <CheckBox Grid.Row="1" 
-                              Grid.Column="1" 
-                              Name="chckShowSorted" 
-                              IsChecked="{Binding Source={StaticResource Settings}, Path=Default.chckShowSorted}"
-                              Margin="5" 
-                              Checked="saveControlChanges"
-                              Unchecked="saveControlChanges"
-                              >Show already sorted files</CheckBox>
 
     </Grid>
 </UserControl>

@@ -37,7 +37,13 @@ namespace Sortit.al.aldi.sortit.control
         }
 
         public SortFilesDate(String dest, String pattern, bool copy, String sortType)
-            : base(copy)
+            : this(dest, pattern, copy, sortType, false)
+        {
+ 
+        }
+
+        public SortFilesDate(String dest, String pattern, bool copy, String sortType, bool overwrite)
+            : base(copy, overwrite)
         {
             Destination = dest;
             DatePattern = pattern;

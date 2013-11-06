@@ -139,14 +139,14 @@ namespace Sortit
         /// Async Renames file after checking that destination doesnt exist.
         /// </summary>
         /// <param name="file"></param>
-        public async static Task<bool> SafeRenameAsync(File2Sort file)
+        public async static Task<bool> SafeMoveAsync(File2Sort file, bool overwrite = false)
         {
-            if (!file.DestinationFileExists())
+            if (overwrite || !file.DestinationFileExists())
             {
                 try
                 {
                     SafeCreateParents(file.FullDestination);
-                    return await Task<bool>.Run(() => file.Move() );
+                    return await Task<bool>.Run(() => file.Move(overwrite) );
                 }
                 catch (Exception e)
                 {
@@ -194,14 +194,14 @@ namespace Sortit
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public async static Task<bool> SafeCopyAsync(File2Sort file)
+        public async static Task<bool> SafeCopyAsync(File2Sort file, bool overwrite = false)
         {
-            if (!file.DestinationFileExists())
+            if (overwrite || !file.DestinationFileExists())
             {
                 try
                 {
                     SafeCreateParents(file.FullDestination);
-                    await Task.Run( () => File.Copy(file.FullPath, file.FullDestination) );
+                    await Task.Run( () => file.Copy(overwrite) );
                     return true;
                 }
                 catch (Exception e)

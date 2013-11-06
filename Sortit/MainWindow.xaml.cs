@@ -1,4 +1,5 @@
-﻿using Sortit.al.aldi.sortit.control;
+﻿using log4net;
+using Sortit.al.aldi.sortit.control;
 using Sortit.al.aldi.sortit.model;
 using Sortit.al.aldi.sortit.views;
 using Sortit.Properties;
@@ -35,6 +36,8 @@ namespace Sortit
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
 
+        private static readonly ILog x = LogManager.GetLogger("MainWindow");
+
         // --------------------------------------------------------------------
 
         const String ALPHA_GRID_INSTANCE = "alphaGridInstance";
@@ -56,6 +59,12 @@ namespace Sortit
 
         public MainWindow()
         {
+#if DEBUG
+            AllocConsole();
+#endif
+            log4net.Config.XmlConfigurator.Configure();
+            x.Info("Starting Application");
+
             InitializeComponent();
 
             UpdateSortFilesEvent = UpdateStartButton;
@@ -79,9 +88,7 @@ namespace Sortit
             mnItemExit.Click += mnItemExit_Click;
 
             // Console for debug purposes
-#if DEBUG
-            AllocConsole();
-#endif
+
         }
 
         /// <summary>
@@ -147,7 +154,7 @@ namespace Sortit
             await Algorithm.SortAsync(SortFiles);
             // clean up
 
-            if (alphaGridInstance.chckCleanEmptyDir.IsChecked.Value)
+            if (GeneralSettings.chckCleanEmptyDir.IsChecked.Value)
             {
                 // cleaning both source and destination folders for empty directories
                 IOUtils.CleanEmptyDirs(txtDestinationFolder.Text);
@@ -251,7 +258,7 @@ namespace Sortit
             {
                 fileChecked &= file.IsAlphaNumeric;
             }
-            if (!alphaGridInstance.chckShowSorted.IsChecked.Value)
+            if (!GeneralSettings.chckShowSorted.IsChecked.Value)
             {
                 // updating the destination path based on the algorithm
                 file.SetDestinationFullPath(Algorithm.RenameFunc);
@@ -269,11 +276,11 @@ namespace Sortit
             switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
                 case "alpha":
-                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(alphaGridInstance.txtDepth.Text), alphaGridInstance.chckCopy.IsChecked.Value);
+                    algorithm = new SortFilesAlpha(txtDestinationFolder.Text, Int32.Parse(alphaGridInstance.txtDepth.Text), GeneralSettings.chckCopy.IsChecked.Value, GeneralSettings.chckOverwriteExisting.IsChecked.Value);
                     break;
 
                 case "date":
-                    algorithm = new SortFilesDate(txtDestinationFolder.Text, alphaGridInstance.txtDepth.Text, alphaGridInstance.chckCopy.IsChecked.Value, ((ComboBoxItem)dateGridInstance.cmbSortType.SelectedItem).Name);
+                    algorithm = new SortFilesDate(txtDestinationFolder.Text, alphaGridInstance.txtDepth.Text, GeneralSettings.chckCopy.IsChecked.Value, ((ComboBoxItem)dateGridInstance.cmbSortType.SelectedItem).Name, GeneralSettings.chckOverwriteExisting.IsChecked.Value);
                     break;
             }
 
@@ -398,21 +405,19 @@ namespace Sortit
         private void SortingType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             saveControlChanges(sender, e);
-                        
-            
-
+            // switching will replace the context sensitive area. 3 ist the current order of the grid location
             switch (((ComboBoxItem)SortingType.SelectedItem).Name)
             {
                 case "alpha":
                     this.mainPanel.Children.Remove(dateGridInstance);
                     if(!this.mainPanel.Children.Contains(alphaGridInstance))
-                        this.mainPanel.Children.Insert(2, alphaGridInstance);
+                        this.mainPanel.Children.Insert(3, alphaGridInstance);
                     break;
 
                 case "date":
                     this.mainPanel.Children.Remove(alphaGridInstance);
                     if (!this.mainPanel.Children.Contains(dateGridInstance))
-                        this.mainPanel.Children.Insert(2, dateGridInstance);
+                        this.mainPanel.Children.Insert(3, dateGridInstance);
                     break;
             }
         }

@@ -51,7 +51,8 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Start</Button>
-                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.sort_type}">
+                    <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="0">
+                        <ComboBoxItem Name="no_algorithm">Choose Algorithm</ComboBoxItem>
                         <ComboBoxItem Name="alpha">Alphabetically [A-Z]</ComboBoxItem>
                         <ComboBoxItem Name="date">Date</ComboBoxItem>
                     </ComboBox>

@@ -372,9 +372,13 @@ namespace Sortit
                     }
                 }
 
-                if (null != foundedItem && File2Sort.FileChangesType.OPERATION_STARTED == type)
+                if (null != foundedItem && File2Sort.FileChangesType.OPERATION_ENDED == type)
                 {
                     foundedItem.FontWeight = FontWeights.Bold;
+                    foreach (TreeViewItem tvi in tvFilesTree.Items)
+                    {
+                        tvi.FontWeight = FontWeights.Normal;
+                    }
                 }
             }));
         }
@@ -405,23 +409,27 @@ namespace Sortit
         private void SortingType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             saveControlChanges(sender, e);
-            // switching will replace the context sensitive area. 3 ist the current order of the grid location
-            switch (((ComboBoxItem)SortingType.SelectedItem).Name)
-            {
-                case "alpha":
-                    this.mainPanel.Children.Remove(dateGridInstance);
-                    if(!this.mainPanel.Children.Contains(alphaGridInstance))
-                        this.mainPanel.Children.Insert(3, alphaGridInstance);
-                    break;
 
-                case "date":
-                    this.mainPanel.Children.Remove(alphaGridInstance);
-                    if (!this.mainPanel.Children.Contains(dateGridInstance))
-                        this.mainPanel.Children.Insert(3, dateGridInstance);
-                    break;
+            if (null != alphaGridInstance && null != dateGridInstance)
+            {
+                String selectedAlgorithm = ((ComboBoxItem)SortingType.SelectedItem).Name;
+
+                // switching will replace the context sensitive area. 3 ist the current order of the grid location
+                switch (selectedAlgorithm)
+                {
+                    case "alpha":
+                        this.mainPanel.Children.Remove(dateGridInstance);
+                        if (!this.mainPanel.Children.Contains(alphaGridInstance))
+                            this.mainPanel.Children.Insert(3, alphaGridInstance);
+                        break;
+
+                    case "date":
+                        this.mainPanel.Children.Remove(alphaGridInstance);
+                        if (!this.mainPanel.Children.Contains(dateGridInstance))
+                            this.mainPanel.Children.Insert(3, dateGridInstance);
+                        break;
+                }
             }
         }
-
-
     }
 }

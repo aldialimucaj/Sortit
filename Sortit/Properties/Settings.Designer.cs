@@ -142,5 +142,17 @@ namespace Sortit.Properties {
                 this["chckOverwriteExisting"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int cmbSortType {
+            get {
+                return ((int)(this["cmbSortType"]));
+            }
+            set {
+                this["cmbSortType"] = value;
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@
         <ComboBox Grid.Row="0" 
                              Grid.Column="0" 
                              Name="cmbSortType" 
-                             Text="{Binding Source={StaticResource Settings}, Path=Default.cmbSortType}" 
+                             SelectedIndex="{Binding Source={StaticResource Settings}, Path=Default.cmbSortType}" 
                              SelectionChanged="saveControlChanges"
                              Padding="5"
                              ToolTip="Depth according to selected sorting algorithm"

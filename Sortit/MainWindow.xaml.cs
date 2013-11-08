@@ -175,6 +175,11 @@ namespace Sortit
                 System.Windows.MessageBox.Show("Cant crawl an empty dir!");
                 return;
             }
+            if (SortingType.SelectedIndex == 0)
+            {
+                System.Windows.MessageBox.Show("Cant calculate with empty algorithm!");
+                return;
+            }
             if (txtDestinationFolder.Text.Equals(""))
             {
                 txtDestinationFolder.Text = txtSourceFolder.Text;
@@ -237,10 +242,22 @@ namespace Sortit
                 TreeViewItem itemRoot = new TreeViewItem();
                 itemRoot.Tag = file;
                 itemRoot.Header = file.FileName;
-                itemRoot.Items.Add("Source :-> " + file.FilePath);
-                itemRoot.Items.Add("Destination :-> " + file.FullDestination);
-                itemRoot.Items.Add("Size :-> " + (file.RawSourceFile.Length / (1024 * 1024)) + " MB");
-                itemRoot.Items.Add("Created :-> " + file.CreatedDateTime);
+                System.Windows.Controls.Label label1 = new System.Windows.Controls.Label();
+                label1.Content = "Source :-> " + file.FilePath;
+                System.Windows.Controls.Label label2 = new System.Windows.Controls.Label();
+                label2.Content = "Destination :-> " + file.FullDestination;
+                System.Windows.Controls.Label label3 = new System.Windows.Controls.Label();
+                label3.Content = "Size :-> " + (file.RawSourceFile.Length / (1024 * 1024)) + " MB";
+                System.Windows.Controls.Label label4 = new System.Windows.Controls.Label();
+                label4.Content = "Created :-> " + file.CreatedDateTime;
+                label1.Padding = new Thickness(0);
+                label2.Padding = new Thickness(0);
+                label3.Padding = new Thickness(0);
+                label4.Padding = new Thickness(0);
+                itemRoot.Items.Add(label1);
+                itemRoot.Items.Add(label2);
+                itemRoot.Items.Add(label3);
+                itemRoot.Items.Add(label4);
 
                 tree.Items.Add(itemRoot);
             }
@@ -375,7 +392,7 @@ namespace Sortit
                 if (null != foundedItem && File2Sort.FileChangesType.OPERATION_ENDED == type)
                 {
                     foundedItem.FontWeight = FontWeights.Bold;
-                    foreach (TreeViewItem tvi in tvFilesTree.Items)
+                    foreach (System.Windows.Controls.Label tvi in foundedItem.Items)
                     {
                         tvi.FontWeight = FontWeights.Normal;
                     }
@@ -429,6 +446,22 @@ namespace Sortit
                             this.mainPanel.Children.Insert(3, dateGridInstance);
                         break;
                 }
+            }
+        }
+
+        private void txtFields_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                btnCalculate_Click(sender, e);
+            }
+        }
+
+        private void mnItemClear_Click(object sender, RoutedEventArgs e)
+        {
+            if (null != SortFiles)
+            {
+                SortFiles.Clear();
             }
         }
     }

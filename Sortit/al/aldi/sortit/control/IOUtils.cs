@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sortit.al.aldi.sortit.control;
+using System.ComponentModel;
 
 namespace Sortit
 {
@@ -23,11 +24,11 @@ namespace Sortit
         /// <param name="mask">Mask to filter the files with. Can be separated by a pipe like *.txt|*.pdf</param>
         /// <param name="checkFile">Delegate to check for</param>
         /// <returns></returns>
-        public async static Task<IList<File2Sort>> GetAllFiles(String path, String mask, Func<File2Sort, bool> checkFile = null)
+        public async static Task<BindingList<File2Sort>> GetAllFiles(String path, String mask, Func<File2Sort, bool> checkFile = null)
         {
             path = Path.GetDirectoryName(path);
 
-            List<File2Sort> listFiles = new List<File2Sort>();
+            BindingList<File2Sort> listFiles = new BindingList<File2Sort>();
             List<string> files = new List<string>();
             string[] fileMasks = mask.Split('|');
             foreach (string fMaks in fileMasks)

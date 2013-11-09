@@ -21,8 +21,8 @@
                     <MenuItem Header="_Exit" Name="mnItemExit"></MenuItem>
                 </MenuItem>
                 <MenuItem Header="_Actions">
-                    <MenuItem Header="_Sort"></MenuItem>
-                    <MenuItem Header="_Calculate"></MenuItem>
+                    <MenuItem Header="_Sort" Name="mnItemSort" Click="btnStart_Click"></MenuItem>
+                    <MenuItem Header="_Calculate" Name="mnItemCalculate" Click="btnCalculate_Click"></MenuItem>
                     <MenuItem Header="_Clear" Name="mnItemClear" Click="mnItemClear_Click"></MenuItem>
                     <MenuItem Header="_Stop"></MenuItem>
                 </MenuItem>
@@ -51,7 +51,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Start</Button>
+                    <Button Grid.Row="0" Name="btnStart" ToolTip="Start the sorting process" Click="btnStart_Click">Sort</Button>
                     <ComboBox Grid.Row="1" Name="SortingType" Text="Sorting Type" SelectionChanged="SortingType_SelectionChanged" SelectedIndex="0">
                         <ComboBoxItem Name="no_algorithm">Choose Algorithm</ComboBoxItem>
                         <ComboBoxItem Name="alpha">Alphabetically [A-Z]</ComboBoxItem>

@@ -51,11 +51,22 @@ namespace Sortit
         private readonly BackgroundWorker workerPrepareSorting = new BackgroundWorker();
         private ISort Algorithm = null;
 
-        private delegate void UpdateSortFilesDelegate();
+        private delegate void UpdateSortFilesDelegate(object sender, ListChangedEventArgs e);
         private event UpdateSortFilesDelegate UpdateSortFilesEvent;
 
-        private IList<File2Sort> _sortFiles = null;
-        private IList<File2Sort> SortFiles { get { return _sortFiles; } set { _sortFiles = value; UpdateSortFilesEvent(); } }
+        private BindingList<File2Sort> _sortFiles = null;
+        private BindingList<File2Sort> SortFiles 
+        { 
+            get { return _sortFiles; } 
+            set 
+            { 
+                _sortFiles = value; 
+                _sortFiles.AddingNew += new AddingNewEventHandler(SortFiles_AddingNew);
+                _sortFiles.ListChanged += new ListChangedEventHandler(SortFiles_ListChanged);
+                _sortFiles.ListChanged += new ListChangedEventHandler(UpdateStartButton);
+                UpdateSortFilesEvent(null, null); 
+            } 
+        }
 
         public MainWindow()
         {
@@ -68,7 +79,8 @@ namespace Sortit
             InitializeComponent();
 
             UpdateSortFilesEvent = UpdateStartButton;
-            UpdateSortFilesEvent();
+            UpdateSortFilesEvent(null, null);
+
 
             // these are instances of UI objects instantiated in XAML
             alphaGridInstance = FindResource(ALPHA_GRID_INSTANCE) as AlphaGrid;
@@ -370,10 +382,7 @@ namespace Sortit
         }
 
 
-        private void UpdateStartButton()
-        {
-            btnStart.IsEnabled = SortFiles != null && SortFiles.Count > 0;
-        }
+
 
         private void UpdateFileChanged(File2Sort file, File2Sort.FileChangesType type)
         {
@@ -398,6 +407,35 @@ namespace Sortit
                     }
                 }
             }));
+        }
+
+        /// <summary>
+        /// What happens if new item is added to the background list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void SortFiles_AddingNew(object sender, AddingNewEventArgs e)
+        {
+            x.Info("Element Added: "+ e.NewObject.ToString());
+        }
+
+        /// <summary>
+        /// What happens if background list is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void SortFiles_ListChanged(object sender, ListChangedEventArgs  e)
+        {
+            x.Info("ListChanged: " + e.ListChangedType.ToString());
+            
+            if(e.ListChangedType == ListChangedType.Reset)
+            {
+                tvFilesTree.Items.Clear();
+            }
+            else if (e.ListChangedType == ListChangedType.ItemDeleted)
+            {
+                tvFilesTree.Items.RemoveAt(e.OldIndex);
+            }
         }
 
 
@@ -445,6 +483,10 @@ namespace Sortit
                         if (!this.mainPanel.Children.Contains(dateGridInstance))
                             this.mainPanel.Children.Insert(3, dateGridInstance);
                         break;
+                    case "no_algorithm":
+                        this.mainPanel.Children.Remove(dateGridInstance);
+                        this.mainPanel.Children.Remove(alphaGridInstance);
+                        break;
                 }
             }
         }
@@ -463,6 +505,16 @@ namespace Sortit
             {
                 SortFiles.Clear();
             }
+        }
+
+        /// <summary>
+        /// Update Sort button depending the list cound
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateStartButton(object sender, ListChangedEventArgs e)
+        {
+            btnStart.IsEnabled = SortFiles != null && SortFiles.Count > 0;
         }
     }
 }

@@ -28,13 +28,16 @@ namespace Sortit
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// This is the first window which renders every other part of the GUI.
     /// </summary>
     public partial class MainWindow : Window
     {
+#if DEBUG
         // binding console for debug purposes
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
+#endif
 
         private static readonly ILog x = LogManager.GetLogger("MainWindow");
 
@@ -55,17 +58,17 @@ namespace Sortit
         private event UpdateSortFilesDelegate UpdateSortFilesEvent;
 
         private BindingList<File2Sort> _sortFiles = null;
-        private BindingList<File2Sort> SortFiles 
-        { 
-            get { return _sortFiles; } 
-            set 
-            { 
-                _sortFiles = value; 
+        private BindingList<File2Sort> SortFiles
+        {
+            get { return _sortFiles; }
+            set
+            {
+                _sortFiles = value;
                 _sortFiles.AddingNew += new AddingNewEventHandler(SortFiles_AddingNew);
                 _sortFiles.ListChanged += new ListChangedEventHandler(SortFiles_ListChanged);
                 _sortFiles.ListChanged += new ListChangedEventHandler(UpdateStartButton);
-                UpdateSortFilesEvent(null, null); 
-            } 
+                UpdateSortFilesEvent(null, null);
+            }
         }
 
         public MainWindow()
@@ -182,7 +185,7 @@ namespace Sortit
         /// <param name="e"></param>
         private async void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
-            if(txtSourceFolder.Text.Equals(""))
+            if (txtSourceFolder.Text.Equals(""))
             {
                 System.Windows.MessageBox.Show("Cant crawl an empty dir!");
                 return;
@@ -198,14 +201,14 @@ namespace Sortit
             }
 
             String filePath = txtSourceFolder.Text.EndsWith("\\") ? txtSourceFolder.Text : txtSourceFolder.Text + "\\";
-            
+
 
             Algorithm = GetSelectedAlgorithm();
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
             SortFiles = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
             //RegisterObserver(files);
-      
+
 
             // Adding entries in the treeView
             Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort> arg = new Tuple<System.Windows.Controls.TreeView, IList<File2Sort>, ISort>(tvFilesTree, SortFiles, Algorithm);
@@ -351,7 +354,7 @@ namespace Sortit
         {
             Properties.Settings.Default.Save();
         }
-               
+
         private void saveControlChanges(object sender, RoutedEventArgs e)
         {
             if (sender is System.Windows.Controls.TextBox)
@@ -416,7 +419,7 @@ namespace Sortit
         /// <param name="e"></param>
         public void SortFiles_AddingNew(object sender, AddingNewEventArgs e)
         {
-            x.Info("Element Added: "+ e.NewObject.ToString());
+            x.Info("Element Added: " + e.NewObject.ToString());
         }
 
         /// <summary>
@@ -424,11 +427,11 @@ namespace Sortit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void SortFiles_ListChanged(object sender, ListChangedEventArgs  e)
+        public void SortFiles_ListChanged(object sender, ListChangedEventArgs e)
         {
             x.Info("ListChanged: " + e.ListChangedType.ToString());
-            
-            if(e.ListChangedType == ListChangedType.Reset)
+
+            if (e.ListChangedType == ListChangedType.Reset)
             {
                 tvFilesTree.Items.Clear();
             }

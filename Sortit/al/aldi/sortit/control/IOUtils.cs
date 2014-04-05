@@ -36,7 +36,7 @@ namespace Sortit
                 try
                 {
                     string[] t_files = await Task.Run<string[]>(() => Directory.GetFiles(path, fMaks, SearchOption.AllDirectories));
-                    
+
                     files.AddRange(t_files);
                 }
                 catch (Exception e)
@@ -45,12 +45,20 @@ namespace Sortit
                 }
             }
 
-            
+
             foreach (string file in files)
             {
-                File2Sort f2s = new File2Sort(file);
-                if (null != file && (checkFile == null || checkFile(f2s)))
-                    listFiles.Add(f2s);
+                try
+                {
+                    File2Sort f2s = new File2Sort(file);
+                    if (null != file && (checkFile == null || checkFile(f2s)))
+                        listFiles.Add(f2s);
+
+                }
+                catch (Exception e)
+                {
+                    x.Error(e.Message);
+                }
             }
             return listFiles;
         }
@@ -92,14 +100,14 @@ namespace Sortit
         /// <param name="path">Path to be crawled</param>
         public static void CleanEmptyDirs(String path)
         {
-            IEnumerable<DirectoryInfo> t_directories = 
-                GetAllDirectories(path, 
+            IEnumerable<DirectoryInfo> t_directories =
+                GetAllDirectories(path,
                 _ => // in order to delete directories there have to be no files/directories or just the Thumbs.db file
                     (!_.EnumerateFiles().Any() || (_.EnumerateFiles().Count() == 1 && _.EnumerateFiles().First().Name.Equals("Thumbs.db"))) &&
                     !_.EnumerateDirectories().Any());
             foreach (DirectoryInfo dir in t_directories)
             {
-                Console.WriteLine("[DEL_DIR] "+dir.FullName);
+                Console.WriteLine("[DEL_DIR] " + dir.FullName);
                 IEnumerable<FileInfo> enumFiles = dir.EnumerateFiles();
                 if (enumFiles.Any() && enumFiles.First().Name.Equals("Thumbs.db"))
                 {
@@ -147,7 +155,7 @@ namespace Sortit
                 try
                 {
                     SafeCreateParents(file.FullDestination);
-                    return await Task<bool>.Run(() => file.Move(overwrite) );
+                    return await Task<bool>.Run(() => file.Move(overwrite));
                 }
                 catch (Exception e)
                 {
@@ -202,7 +210,7 @@ namespace Sortit
                 try
                 {
                     SafeCreateParents(file.FullDestination);
-                    await Task.Run( () => file.Copy(overwrite) );
+                    await Task.Run(() => file.Copy(overwrite));
                     return true;
                 }
                 catch (Exception e)

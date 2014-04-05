@@ -87,6 +87,7 @@ namespace Sortit.al.aldi.sortit.control
         /// <returns></returns>
         public IList<File2Sort> PrepareForSorting(IList<File2Sort> files)
         {
+            if (files == null) return files;
             Thread th1 = new Thread(delegate()
             {
 

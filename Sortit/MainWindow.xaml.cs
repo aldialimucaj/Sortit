@@ -206,7 +206,14 @@ namespace Sortit
             Algorithm = GetSelectedAlgorithm();
 
             Func<File2Sort, bool> checkConfig = GetCheckFileConfig;
-            SortFiles = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
+            try
+            {
+                SortFiles = await IOUtils.GetAllFiles(filePath, txtPattern.Text, checkConfig); //todo adding checkConfig here prevents the sorting.
+            }
+            catch (Exception excp)
+            {
+                System.Windows.MessageBox.Show(excp.Message, "Error");
+            }
             //RegisterObserver(files);
 
 
@@ -225,6 +232,7 @@ namespace Sortit
         /// <param name="files"></param>
         private void AddItemsToTree(BackgroundWorker bw, System.Windows.Controls.TreeView tree, IList<File2Sort> files)
         {
+            if (files == null) return;
             //tree.Items.Clear();
 
             tree.Dispatcher.Invoke(new Action(delegate()
@@ -444,9 +452,12 @@ namespace Sortit
 
         private void UpdateStatusBar(IList<File2Sort> files)
         {
-            long generalSize = (from f in files select f.RawSourceFile.Length).Sum() / (1024 * 1024);
-            txtGeneralSizeValue.Text = generalSize.ToString() + " MB";
-            txtItemsCount.Text = files.Count.ToString();
+            if (files != null && files.Count != 0)
+            {
+                long generalSize = (from f in files select f.RawSourceFile.Length).Sum() / (1024 * 1024);
+                txtGeneralSizeValue.Text = generalSize.ToString() + " MB";
+                txtItemsCount.Text = files.Count.ToString();
+            }
 
         }
 

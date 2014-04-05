@@ -12,7 +12,7 @@
     <?define ProductName = "Soritit" ?>
     <?define ProductManufacturer = "Aldi Alimucaj" ?>    
     <?define VersionMin="0.0.1" ?> 
-    <?define VersionMax="1.0.0" ?>
+    <?define VersionMax="100.0.0" ?>
     
     
         
